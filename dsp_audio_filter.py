@@ -16,12 +16,18 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Không hiển thị biểu đồ matplotlib, phù hợp khi chạy kiểm thử hoặc debug headless.",
     )
+    parser.add_argument(
+        "--save-plots-dir",
+        type=str,
+        default=None,
+        help="Thư mục lưu toàn bộ ảnh biểu đồ (ví dụ: imgaes/v3).",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    run_all(show_plots=not args.no_plots)
+    run_all(show_plots=not args.no_plots, save_dir=args.save_plots_dir)
 
 
 if __name__ == "__main__":

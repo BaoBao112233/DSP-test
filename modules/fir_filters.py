@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from scipy.signal import firwin, freqz, remez
 
-from .plot_config import COLORS, finalize_figure
+from .plot_config import COLORS, build_save_path, finalize_figure
 
 
 def design_fir_hamming(wp_rad: float, ws_rad: float) -> np.ndarray:
@@ -37,7 +37,13 @@ def design_fir_pm(wp_rad: float, ws_rad: float, delta1_db: float = 0.5, delta2_d
     return coefficients
 
 
-def plot_fir_response(h_hamming: np.ndarray, h_pm: np.ndarray, fs: float = 44100.0, show_plots: bool = True):
+def plot_fir_response(
+    h_hamming: np.ndarray,
+    h_pm: np.ndarray,
+    fs: float = 44100.0,
+    show_plots: bool = True,
+    save_path: str | None = None,
+):
     fig = plt.figure(figsize=(13, 10), tight_layout=True)
     fig.suptitle("Chương 3 – Bộ lọc FIR: Hamming vs Parks-McClellan", fontsize=13, color=COLORS[4])
     grid = gridspec.GridSpec(2, 2)
@@ -65,10 +71,10 @@ def plot_fir_response(h_hamming: np.ndarray, h_pm: np.ndarray, fs: float = 44100
         ax_phase.set_ylabel("Góc pha (độ)")
         ax_phase.grid(True)
 
-    finalize_figure(fig, show_plots)
+    finalize_figure(fig, show_plots, save_path=save_path)
 
 
-def demo_fir(fs: float = 44100.0, show_plots: bool = True):
+def demo_fir(fs: float = 44100.0, show_plots: bool = True, save_dir: str | None = None):
     print("\n" + "=" * 60)
     print("CHƯƠNG 3: THIẾT KẾ BỘ LỌC FIR")
     print("=" * 60)
@@ -82,5 +88,11 @@ def demo_fir(fs: float = 44100.0, show_plots: bool = True):
     h_hamming = design_fir_hamming(wp, ws)
     h_pm = design_fir_pm(wp, ws)
     print("  Pha tuyến tính (Hamming) : ✔  (FIR với h đối xứng – Type 1)")
-    plot_fir_response(h_hamming, h_pm, fs=fs, show_plots=show_plots)
+    plot_fir_response(
+        h_hamming,
+        h_pm,
+        fs=fs,
+        show_plots=show_plots,
+        save_path=build_save_path(save_dir, "05_fir_hamming_vs_pm.png"),
+    )
     return {"h_hamming": h_hamming, "h_pm": h_pm, "wp": wp, "ws": ws, "fs": fs}

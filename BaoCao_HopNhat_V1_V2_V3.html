@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang='vi'>
+<head>
+  <meta charset='utf-8'>
+  <title>Báo cáo hợp nhất V1-V2-V3</title>
+  <style>
+body { font-family: 'DejaVu Serif', serif; margin: 28px 34px; line-height: 1.55; color: #1f2937; }
+h1, h2, h3 { color: #0f172a; margin-top: 1.1em; }
+h1 { font-size: 28px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+h2 { font-size: 22px; }
+h3 { font-size: 18px; }
+p, li { font-size: 13.5px; }
+img { max-width: 100%; height: auto; margin: 10px 0 16px 0; border: 1px solid #e5e7eb; }
+code { background: #f3f4f6; padding: 2px 5px; border-radius: 4px; font-family: 'DejaVu Sans Mono', monospace; }
+pre { background: #f8fafc; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+th, td { border: 1px solid #d1d5db; padding: 8px; text-align: left; }
+th { background: #eef2ff; }
+hr { border: none; border-top: 1px solid #cbd5e1; margin: 18px 0; }
+</style>
+</head>
+<body>
+<h1>BÁO CÁO HỢP NHẤT V1-V2-V3</h1>
+<h2>THIẾT KẾ, MÔ PHỎNG VÀ ĐÁNH GIÁ BỘ LỌC SỐ CHO TÍN HIỆU ÂM THANH</h2>
+<p><strong>Đơn vị:</strong> Trường Đại học Bách Khoa Hà Nội – Viện Điện tử Viễn thông<br />
+<strong>Sinh viên:</strong> Đồng Thiên Trang – MSSV 20102350<br />
+<strong>Môn học:</strong> Xử lý số tín hiệu (DSP)<br />
+<strong>Ngày cập nhật:</strong> 20/03/2026</p>
+<hr />
+<h2>TÓM TẮT</h2>
+<p>Báo cáo hợp nhất này tổng hợp đầy đủ ba phiên bản trước theo một cấu trúc khoa học xuyên suốt từ lý thuyết đến triển khai. Nội dung tập trung vào thiết kế bộ lọc số FIR/IIR cho tín hiệu âm thanh, mô phỏng quá trình rời rạc hóa theo định lý Nyquist–Shannon, đánh giá hiện tượng aliasing, so sánh hiệu năng FIR và IIR, và kiểm chứng ứng dụng thực tế với bộ lọc notch 50 Hz và hiệu ứng echo.</p>
+<p>Về mặt phương pháp, phần FIR được triển khai theo hai hướng: cửa sổ Hamming và Parks-McClellan (equiripple), còn phần IIR dùng Chebyshev Type I kết hợp tư duy bilinear/pre-warp. Về mặt kỹ thuật phần mềm, chương trình đã được mô-đun hóa hoàn chỉnh bằng Python/SciPy/Matplotlib, hỗ trợ chạy tương tác, chạy headless và tự động xuất toàn bộ hình vào <code>imgaes/v3/</code> phục vụ báo cáo.</p>
+<p>Kết quả cho thấy: (i) điều kiện Nyquist được thỏa với $F_s=44.1$ kHz cho tín hiệu có $f_{max}=3$ kHz; (ii) khi vi phạm Nyquist (ví dụ $F_s=4$ kHz), thành phần 3 kHz bị alias về 1 kHz; (iii) IIR đạt bậc thấp hơn đáng kể so với FIR nhưng đánh đổi pha phi tuyến; (iv) notch 50 Hz cải thiện SNR rõ rệt, từ khoảng 4.37 dB lên 11.33 dB.</p>
+<hr />
+<h2>1. GIỚI THIỆU VÀ BỐI CẢNH</h2>
+<p>Sự chuyển dịch từ hệ analog sang hệ số trong xử lý âm thanh mang lại ba lợi thế chính: độ lặp lại cao, tính linh hoạt thuật toán, và khả năng tối ưu hóa trên phần cứng DSP. Trong bối cảnh này, hai lớp bộ lọc chủ đạo là FIR và IIR luôn đóng vai trò trung tâm.</p>
+<ul>
+<li><strong>FIR</strong> phù hợp khi ưu tiên pha tuyến tính và độ trung thực dạng sóng.</li>
+<li><strong>IIR</strong> phù hợp khi ưu tiên hiệu quả tính toán (ít phép MAC, bậc thấp).</li>
+</ul>
+<p>Liên hệ phần cứng thực nghiệm: TMS320C50 (fixed-point DSP) và hệ Lab-Volt DSP cho thấy các quyết định thiết kế bộ lọc không chỉ mang tính học thuật mà còn tác động trực tiếp đến tài nguyên phần cứng thời gian thực.</p>
+<hr />
+<h2>2. MỤC TIÊU NGHIÊN CỨU</h2>
+<ol>
+<li>Thiết kế và mô phỏng bộ lọc số cho tín hiệu âm thanh theo thông số kỹ thuật cho trước.</li>
+<li>Xây dựng pipeline phân tích tín hiệu từ mô phỏng tín hiệu gốc, rời rạc hóa, đánh giá Nyquist đến phân tích phổ.</li>
+<li>So sánh FIR và IIR trên các tiêu chí: bậc lọc, đáp ứng biên độ, pha, trễ nhóm, ổn định.</li>
+<li>Kiểm chứng hai ứng dụng thực tế:</li>
+<li>Khử nhiễu điện lưới bằng notch 50 Hz.</li>
+<li>Mô phỏng hiệu ứng echo theo mô hình trễ.</li>
+<li>Chuẩn hóa hệ thống mã nguồn thành kiến trúc module, dễ debug và tái sử dụng.</li>
+</ol>
+<hr />
+<h2>3. CƠ SỞ LÝ THUYẾT</h2>
+<h2>3.1 Hệ LTI rời rạc</h2>
+<p>Mô hình tổng quát của hệ tuyến tính bất biến theo thời gian:</p>
+<p>$$
+y(n)=\sum_{i=0}^{M} b_i x(n-i)-\sum_{j=1}^{N} a_j y(n-j)
+$$</p>
+<p>Năng lượng tín hiệu:</p>
+<p>$$
+E_x=\sum_n |x(n)|^2
+$$</p>
+<h2>3.2 Biến đổi Z và ổn định</h2>
+<p>Hàm truyền đạt:</p>
+<p>$$
+H(z)=\frac{B(z)}{A(z)}
+$$</p>
+<p>Điều kiện ổn định BIBO của hệ rời rạc nhân quả: mọi pole phải nằm trong vòng tròn đơn vị, tức $|p_k|&lt;1$.</p>
+<h2>3.3 Phân loại bộ lọc theo đáp ứng tần số</h2>
+<ul>
+<li>Thông thấp (Low-pass)</li>
+<li>Thông cao (High-pass)</li>
+<li>Thông dải (Band-pass)</li>
+<li>Chắn dải (Band-stop / Notch)</li>
+</ul>
+<h2>3.4 Biến đổi song tuyến và pre-warp</h2>
+<p>Trong thiết kế IIR dựa trên analog prototype:</p>
+<p>$$
+\Omega=\frac{2}{T}\tan\left(\frac{\omega}{2}\right)
+$$</p>
+<p>Công thức này dùng để pre-warp tần số trước khi ánh xạ bilinear, giúp giữ đúng điểm cắt mục tiêu trong miền số.</p>
+<hr />
+<h2>4. PHÂN TÍCH TÍN HIỆU INPUT VÀ ĐIỀU KIỆN LẤY MẪU</h2>
+<h2>4.1 Bài toán low-pass âm thanh</h2>
+<p>Thông số thiết kế:</p>
+<ul>
+<li>$F_s=44.1$ kHz</li>
+<li>$\omega_p=0.2\pi$</li>
+<li>$\omega_s=0.3\pi$</li>
+</ul>
+<p>Đổi sang tần số vật lý:</p>
+<p>$$
+f_p=\frac{\omega_pF_s}{2\pi}=4410\ \text{Hz}
+$$</p>
+<p>$$
+f_s=\frac{\omega_sF_s}{2\pi}=6615\ \text{Hz}
+$$</p>
+<h2>4.2 Mô phỏng tín hiệu gốc và rời rạc hóa</h2>
+<p>Tín hiệu gốc mô phỏng gồm 3 thành phần: 440 Hz, 1000 Hz, 3000 Hz.<br />
+Rời rạc hóa theo:</p>
+<p>$$
+x[n]=x(nT_s),\quad T_s=\frac{1}{F_s}
+$$</p>
+<p>Hình minh họa:</p>
+<p><img alt="Sampling time domain" src="imgaes/v3/01_sampling_time_domain.png" /></p>
+<h2>4.3 Kiểm tra Nyquist–Shannon và aliasing</h2>
+<p>Với $f_{max}=3000$ Hz, điều kiện Nyquist yêu cầu:</p>
+<p>$$
+F_s\ge 2f_{max}=6000\ \text{Hz}
+$$</p>
+<p>Do $F_s=44100$ Hz nên điều kiện được thỏa.<br />
+Phản ví dụ với $F_s=4000$ Hz cho thấy thành phần 3000 Hz alias về 1000 Hz.</p>
+<p>Hình FFT so sánh:</p>
+<p><img alt="Sampling FFT aliasing" src="imgaes/v3/02_sampling_fft_aliasing.png" /></p>
+<hr />
+<h2>5. THIẾT KẾ FIR</h2>
+<h2>5.1 FIR dùng cửa sổ Hamming</h2>
+<p>Bậc ước lượng:</p>
+<p>$$
+M=\left\lceil\frac{6.6\pi}{\Delta\omega}\right\rceil
+$$</p>
+<p>Với $\Delta\omega=0.1\pi$, thu được $M=66$.</p>
+<p>Đặc điểm:</p>
+<ul>
+<li>Ưu điểm: ổn định, dễ triển khai, pha tốt.</li>
+<li>Nhược điểm: cần nhiều hệ số hơn phương pháp tối ưu.</li>
+</ul>
+<h2>5.2 FIR Parks-McClellan (equiripple)</h2>
+<p>Thiết kế bằng <code>remez</code> với ràng buộc ripple dải thông và suy giảm dải chắn.<br />
+Kết quả thực nghiệm cho bậc xấp xỉ 20, nhỏ hơn rõ rệt so với Hamming.</p>
+<p>Hình so sánh:</p>
+<p><img alt="FIR compare" src="imgaes/v3/05_fir_hamming_vs_pm.png" /></p>
+<hr />
+<h2>6. THIẾT KẾ IIR CHEBYSHEV TYPE I</h2>
+<p>Ràng buộc thiết kế:</p>
+<ul>
+<li>$R_p=1$ dB</li>
+<li>$R_s=15$ dB</li>
+</ul>
+<p><code>cheb1ord</code> cho bậc tối thiểu $N=4$.<br />
+Pre-warp tương ứng:</p>
+<ul>
+<li>$\Omega_p \approx 28657.92$ rad/s</li>
+<li>$\Omega_s \approx 44940.14$ rad/s</li>
+</ul>
+<p>Hình đáp ứng và mặt phẳng Z:</p>
+<p><img alt="IIR response" src="imgaes/v3/06_iir_response.png" /></p>
+<p>Nhận xét:</p>
+<ul>
+<li>Độ dốc tốt với bậc thấp.</li>
+<li>Group delay không hằng (pha phi tuyến).</li>
+<li>Hệ ổn định vì pole trong vòng tròn đơn vị.</li>
+</ul>
+<hr />
+<h2>7. SO SÁNH FIR VÀ IIR</h2>
+<p>Hình so sánh trực quan:</p>
+<p><img alt="FIR vs IIR" src="imgaes/v3/07_fir_vs_iir_compare.png" /></p>
+<p>Bảng tóm tắt:</p>
+<table>
+<thead>
+<tr>
+<th>Tiêu chí</th>
+<th>FIR</th>
+<th>IIR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bậc lọc</td>
+<td>Cao hơn</td>
+<td>Thấp hơn</td>
+</tr>
+<tr>
+<td>Pha</td>
+<td>Tuyến tính tốt</td>
+<td>Phi tuyến</td>
+</tr>
+<tr>
+<td>Ổn định</td>
+<td>Luôn ổn định</td>
+<td>Cần kiểm tra pole</td>
+</tr>
+<tr>
+<td>Chi phí tính toán</td>
+<td>Lớn hơn</td>
+<td>Nhỏ hơn</td>
+</tr>
+<tr>
+<td>Ứng dụng phù hợp</td>
+<td>Audio Hi-Fi</td>
+<td>Hệ thống hạn chế tài nguyên</td>
+</tr>
+</tbody>
+</table>
+<p>Kết luận kỹ thuật: không có lựa chọn tuyệt đối tốt nhất; cần chọn theo tiêu chí ưu tiên giữa trung thực pha và hiệu quả tính toán.</p>
+<hr />
+<h2>8. ỨNG DỤNG THỰC TẾ</h2>
+<h2>8.1 Notch 50 Hz</h2>
+<p>Bài toán: tín hiệu 440 Hz bị nhiễu điện lưới 50 Hz.<br />
+Bộ lọc sử dụng: <code>iirnotch(50 Hz, Q=30)</code>.</p>
+<p>Hình kết quả:</p>
+<p><img alt="Notch 50Hz" src="imgaes/v3/08_notch_50hz.png" /></p>
+<p>SNR cải thiện:</p>
+<ul>
+<li>Trước lọc: ~4.37 dB</li>
+<li>Sau lọc: ~11.33 dB</li>
+</ul>
+<h2>8.2 Echo</h2>
+<p>Mô hình:</p>
+<p>$$
+y(n)=x(n)+\alpha x(n-D)
+$$</p>
+<p>với các mức trễ 100/200/400 ms.</p>
+<p>Hình mô phỏng:</p>
+<p><img alt="Echo demo" src="imgaes/v3/09_echo_demo.png" /></p>
+<hr />
+<h2>9. KIẾN TRÚC PHẦN MỀM VÀ QUY TRÌNH TÁI LẬP</h2>
+<h2>9.1 Kiến trúc module</h2>
+<ul>
+<li>Điều phối: <code>modules/demo_runner.py</code></li>
+<li>Sampling + Nyquist: <code>modules/sampling_demo.py</code></li>
+<li>Thao tác tín hiệu: <code>modules/signal_ops.py</code></li>
+<li>Z-transform: <code>modules/z_analysis.py</code></li>
+<li>FIR: <code>modules/fir_filters.py</code></li>
+<li>IIR: <code>modules/iir_filters.py</code></li>
+<li>So sánh FIR-IIR: <code>modules/comparison.py</code></li>
+<li>Ứng dụng notch/echo: <code>modules/applications.py</code></li>
+<li>Cấu hình và lưu hình: <code>modules/plot_config.py</code></li>
+</ul>
+<h2>9.2 Lệnh chạy</h2>
+<p>Chạy hiển thị tương tác:</p>
+<pre><code class="language-bash">python dsp_audio_filter.py
+</code></pre>
+<p>Chạy headless + lưu ảnh:</p>
+<pre><code class="language-bash">python dsp_audio_filter.py --no-plots --save-plots-dir imgaes/v3
+</code></pre>
+<hr />
+<h2>10. ĐÓNG GÓP MỚI SAU HỢP NHẤT 3 VERSION</h2>
+<ol>
+<li>Chuẩn hóa mạch nội dung khoa học từ lý thuyết đến kiểm chứng thực nghiệm.</li>
+<li>Hợp nhất cả chiều sâu học thuật (Report), chiều sâu kiến trúc code (V2), và chiều sâu minh họa định lượng bằng hình (V3).</li>
+<li>Bổ sung khối kiểm chứng Nyquist + aliasing rõ ràng bằng phản ví dụ FFT.</li>
+<li>Chuẩn bị sẵn dữ liệu hình ảnh để phục vụ báo cáo học thuật và trình bày bảo vệ.</li>
+</ol>
+<hr />
+<h2>11. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN</h2>
+<p>Bản hợp nhất V1-V2-V3 đã đạt mục tiêu xây dựng một báo cáo nhất quán, khoa học và có khả năng tái lập cao. Hệ thống mô phỏng Python hiện không chỉ thay thế được phần MATLAB cốt lõi mà còn mở rộng tốt cho quy trình phân tích thực nghiệm bằng hình ảnh và chỉ số.</p>
+<p>Hướng phát triển tiếp theo:</p>
+<ol>
+<li>Đọc/ghi trực tiếp file WAV thực tế để đánh giá trên dữ liệu ngoài phòng thí nghiệm.</li>
+<li>Thêm adaptive filter (LMS/RLS) cho bài toán khử vọng chủ động.</li>
+<li>Chuẩn hóa bộ test tự động cho từng module DSP.</li>
+<li>Mở rộng sang xử lý đa kênh và pipeline thời gian thực.</li>
+</ol>
+<hr />
+<h2>12. TÀI LIỆU THAM KHẢO</h2>
+<ol>
+<li>A. V. Oppenheim, R. W. Schafer, <em>Digital Signal Processing</em>, Prentice Hall.  </li>
+<li>J. G. Proakis, D. G. Manolakis, <em>Digital Signal Processing: Principles, Algorithms, and Applications</em>.  </li>
+<li>Texas Instruments, <em>TMS320C5x User Guide</em>.  </li>
+<li>Lab-Volt, <em>Digital Signal Processing Training System Manual</em>.  </li>
+<li>Tài liệu môn học DSP, Viện Điện tử Viễn thông, BKHN.</li>
+</ol>
+</body>
+</html>

@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .plot_config import COLORS, finalize_figure
+from .plot_config import COLORS, build_save_path, finalize_figure
 
 
 def sigshift(x: np.ndarray, n: np.ndarray, d: int):
@@ -30,7 +30,7 @@ def energy(x: np.ndarray) -> float:
     return float(np.sum(np.abs(x) ** 2))
 
 
-def demo_signal_ops(show_plots: bool = True):
+def demo_signal_ops(show_plots: bool = True, save_dir: str | None = None):
     n = np.arange(-5, 6)
     x = np.array([0, 0, 0, 1, 2, 3, 2, 1, 0, 0, 0], dtype=float)
 
@@ -63,5 +63,9 @@ def demo_signal_ops(show_plots: bool = True):
         ax.set_ylabel("Biên độ")
         ax.grid(True)
 
-    finalize_figure(fig, show_plots)
+    finalize_figure(
+        fig,
+        show_plots,
+        save_path=build_save_path(save_dir, "03_signal_ops_discrete.png"),
+    )
     return {"x": x, "n": n, "x_added": x_added, "n_added": n_added}

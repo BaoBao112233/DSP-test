@@ -4,10 +4,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import freqz, group_delay
 
-from .plot_config import COLORS, finalize_figure
+from .plot_config import COLORS, build_save_path, finalize_figure
 
 
-def compare_fir_iir(h_fir: np.ndarray, b_iir: np.ndarray, a_iir: np.ndarray, fs: float = 44100.0, show_plots: bool = True):
+def compare_fir_iir(
+    h_fir: np.ndarray,
+    b_iir: np.ndarray,
+    a_iir: np.ndarray,
+    fs: float = 44100.0,
+    show_plots: bool = True,
+    save_dir: str | None = None,
+):
     print("\n" + "=" * 60)
     print("CHƯƠNG 7: SO SÁNH FIR (Parks-McClellan) vs IIR (Chebyshev)")
     print("=" * 60)
@@ -43,5 +50,9 @@ def compare_fir_iir(h_fir: np.ndarray, b_iir: np.ndarray, a_iir: np.ndarray, fs:
     axes[1].legend(facecolor="#2a2a3e")
     axes[1].grid(True)
 
-    finalize_figure(fig, show_plots)
+    finalize_figure(
+        fig,
+        show_plots,
+        save_path=build_save_path(save_dir, "07_fir_vs_iir_compare.png"),
+    )
     return {"gd_fir_max": float(gd_fir.max()), "gd_iir_max": float(gd_iir.max())}

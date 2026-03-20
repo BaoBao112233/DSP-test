@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.signal import freqz
 
-from .plot_config import COLORS, finalize_figure
+from .plot_config import COLORS, build_save_path, finalize_figure
 from .signal_ops import energy
 
 
@@ -13,7 +13,7 @@ def design_notch_50hz(fs: float = 44100.0, q: float = 30.0):
     return signal.iirnotch(50.0, q, fs=fs)
 
 
-def demo_notch(fs: float = 44100.0, show_plots: bool = True):
+def demo_notch(fs: float = 44100.0, show_plots: bool = True, save_dir: str | None = None):
     print("\n" + "=" * 60)
     print("BỔ SUNG: BỘ LỌC NOTCH 50Hz – LOẠI BỎ NHIỄU ĐIỆN LƯỚI")
     print("=" * 60)
@@ -71,7 +71,11 @@ def demo_notch(fs: float = 44100.0, show_plots: bool = True):
     axes[1, 1].legend(facecolor="#2a2a3e")
     axes[1, 1].grid(True)
 
-    finalize_figure(fig, show_plots)
+    finalize_figure(
+        fig,
+        show_plots,
+        save_path=build_save_path(save_dir, "08_notch_50hz.png"),
+    )
     return {"b": b_notch, "a": a_notch, "snr_before": snr_before, "snr_after": snr_after}
 
 
@@ -82,7 +86,7 @@ def simulate_echo(x: np.ndarray, fs: float, delay_ms: float = 200.0, decay: floa
     return x + decay * delayed
 
 
-def demo_echo(fs: float = 8000.0, show_plots: bool = True):
+def demo_echo(fs: float = 8000.0, show_plots: bool = True, save_dir: str | None = None):
     print("\n" + "=" * 60)
     print("BỔ SUNG: MÔ PHỎNG ECHO – LAB-VOLT TMS320C50 ex1_1")
     print("=" * 60)
@@ -113,5 +117,9 @@ def demo_echo(fs: float = 8000.0, show_plots: bool = True):
         axes[index].grid(True)
 
     axes[-1].set_xlabel("Thời gian (giây)")
-    finalize_figure(fig, show_plots)
+    finalize_figure(
+        fig,
+        show_plots,
+        save_path=build_save_path(save_dir, "09_echo_demo.png"),
+    )
     return {"x": x, "time": time}

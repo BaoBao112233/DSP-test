@@ -1,545 +1,650 @@
-# 100 CÂU HỎI - ĐÁP CÓ GIẢI THÍCH VÀ LIÊN KẾT KIẾN THỨC
+# 100 CÂU HỎI – ĐÁP (CẬP NHẬT THEO CODE VÀ BÁO CÁO MỚI)
 
-Tài liệu này đi từ dễ đến khó. Mỗi câu trả lời có 2 phần:
-- **Vì sao:** giải thích bản chất
-- **Liên kết:** chỉ ra câu trước hoặc ý trước cần nhớ để trả lời chính xác
+Tài liệu này cập nhật theo:
 
----
+- Code mới có `sampling_demo`, kiểm tra Nyquist, mô phỏng aliasing, xuất ảnh `imgaes/v3`.
+- Báo cáo hợp nhất mới: `BaoCao_HopNhat_V1_V2_V3.md`.
 
-## PHẦN A — NỀN TẢNG DSP
+Quy ước nhấn mạnh:
 
-1. **Hỏi:** DSP là gì?  
-   **Đáp:** DSP là xử lý số tín hiệu, tức dùng thuật toán số để phân tích và biến đổi tín hiệu.  
-   **Vì sao:** Sau khi tín hiệu được số hóa, mọi phép lọc và phân tích đều trở thành phép toán trên dãy số.  
-   **Liên kết:** Đây là nền tảng để hiểu mọi câu sau.
-
-2. **Hỏi:** Tín hiệu âm thanh số là gì?  
-   **Đáp:** Là tín hiệu âm thanh đã được lấy mẫu và lượng tử hóa thành các giá trị rời rạc.  
-   **Vì sao:** Máy tính không xử lý trực tiếp tín hiệu analog liên tục mà xử lý các mẫu số.  
-   **Liên kết:** Dựa trên câu 1.
-
-3. **Hỏi:** Tần số lấy mẫu `Fs` là gì?  
-   **Đáp:** Là số mẫu lấy được trong 1 giây.  
-   **Vì sao:** `Fs` quyết định độ phân giải theo thời gian và giới hạn phổ có thể biểu diễn.  
-   **Liên kết:** Cần để hiểu định lý Nyquist ở câu 4.
-
-4. **Hỏi:** Định lý Nyquist nói gì?  
-   **Đáp:** `Fs` phải lớn hơn hoặc bằng 2 lần tần số cao nhất của tín hiệu.  
-   **Vì sao:** Nếu không sẽ xảy ra aliasing.  
-   **Liên kết:** Dựa trên câu 3.
-
-5. **Hỏi:** Vì sao audio thường dùng `Fs = 44.1 kHz`?  
-   **Đáp:** Vì nó cho phép biểu diễn phổ tới 22.05 kHz, đủ cho tai người trong đa số tình huống.  
-   **Vì sao:** 22.05 kHz là một nửa của 44.1 kHz theo Nyquist.  
-   **Liên kết:** Kết hợp câu 3 và câu 4.
-
-6. **Hỏi:** Tín hiệu rời rạc thường ký hiệu thế nào?  
-   **Đáp:** Thường ký hiệu là $x(n)$.  
-   **Vì sao:** `n` là chỉ số mẫu nguyên.  
-   **Liên kết:** Dùng xuyên suốt trong code.
-
-7. **Hỏi:** Năng lượng tín hiệu là gì?  
-   **Đáp:** Là tổng bình phương độ lớn các mẫu: $E=\sum |x(n)|^2$.  
-   **Vì sao:** Đây là cách đo mức năng lượng tích lũy của tín hiệu rời rạc.  
-   **Liên kết:** Liên quan trực tiếp tới hàm `energy()` trong code.
-
-8. **Hỏi:** Trong code, `energy()` dùng để làm gì?  
-   **Đáp:** Dùng để tính năng lượng của tín hiệu, đặc biệt trong so sánh SNR.  
-   **Vì sao:** SNR cần tỷ lệ giữa năng lượng tín hiệu và nhiễu.  
-   **Liên kết:** Dựa trên câu 7.
-
-9. **Hỏi:** Bộ lọc số là gì?  
-   **Đáp:** Là hệ thống biến đổi tín hiệu số nhằm giữ lại hoặc loại bỏ một số thành phần tần số.  
-   **Vì sao:** Trong âm thanh, ta thường muốn bỏ nhiễu hoặc giữ dải hữu ích.  
-   **Liên kết:** Kết nối từ DSP cơ bản sang thiết kế lọc.
-
-10. **Hỏi:** Vì sao bộ lọc số quan trọng trong âm thanh?  
-   **Đáp:** Vì âm thanh thường bị nhiễu, méo hoặc chứa thành phần không mong muốn cần loại bỏ.  
-   **Vì sao:** Bộ lọc cho phép điều khiển phổ tín hiệu chính xác hơn mạch analog.  
-   **Liên kết:** Dựa trên câu 9.
+- 🔴 **VẤN ĐÁP TRỌNG TÂM**: câu có xác suất cao được hỏi trực tiếp khi bảo vệ.
+- Mỗi câu gồm: **Đáp**, **Vì sao**, **Liên kết**.
 
 ---
 
-## PHẦN B — CÁC PHÉP TOÁN TÍN HIỆU CƠ BẢN
+## A. DANH SÁCH 25 CÂU VẤN ĐÁP TRỌNG TÂM (ÔN TRƯỚC)
 
-11. **Hỏi:** `sigshift()` làm gì?  
-   **Đáp:** Dịch tín hiệu theo trục chỉ số.  
-   **Vì sao:** Trong DSP, nhiều phép biến đổi chỉ làm thay đổi thời điểm xuất hiện của mẫu.  
-   **Liên kết:** Áp dụng cho tín hiệu $x(n)$ từ câu 6.
+Các câu nên ưu tiên: **4, 5, 23, 27, 31, 33, 34, 36, 41, 43, 47, 48, 51, 57, 61, 63, 65, 67, 71, 72, 74, 81, 82, 86, 100**.
 
-12. **Hỏi:** Vì sao dịch tín hiệu không làm đổi biên độ?  
-   **Đáp:** Vì chỉ số thay đổi, còn giá trị mẫu giữ nguyên.  
-   **Vì sao:** Dịch là phép biến đổi theo thời gian, không phải phép khuếch đại.  
-   **Liên kết:** Mở rộng từ câu 11.
-
-13. **Hỏi:** `sigfold()` làm gì?  
-   **Đáp:** Biến $x(n)$ thành $x(-n)$.  
-   **Vì sao:** Đây là phép gấp tín hiệu theo trục thời gian.  
-   **Liên kết:** Thường học cùng phép dịch ở câu 11.
-
-14. **Hỏi:** Vì sao phép gấp hữu ích?  
-   **Đáp:** Vì nó xuất hiện trong tích chập và phân tích đối xứng.  
-   **Vì sao:** Nhiều phép toán hệ LTI cần nhìn tín hiệu ở dạng đảo thời gian.  
-   **Liên kết:** Dựa trên câu 13.
-
-15. **Hỏi:** `sigadd()` làm gì?  
-   **Đáp:** Cộng hai tín hiệu có thể khác trục chỉ số.  
-   **Vì sao:** Hai dãy muốn cộng đúng phải được đặt lên cùng một miền chỉ số.  
-   **Liên kết:** Kết hợp hiểu biết ở câu 11 và câu 13.
-
-16. **Hỏi:** Vì sao `sigadd()` là chỗ dễ lỗi?  
-   **Đáp:** Vì nếu căn sai `n_start` hoặc `n_stop` thì mẫu sẽ lệch vị trí.  
-   **Vì sao:** Đây là lỗi index điển hình khi xử lý tín hiệu rời rạc.  
-   **Liên kết:** Mở rộng trực tiếp từ câu 15.
-
-17. **Hỏi:** Vì sao chương trình dùng `stem()` thay vì `plot()` ở phần này?  
-   **Đáp:** Vì tín hiệu rời rạc nên hiển thị bằng cọc mẫu rõ bản chất hơn.  
-   **Vì sao:** `plot()` làm tín hiệu trông như liên tục, dễ gây nhầm.  
-   **Liên kết:** Liên hệ cách biểu diễn ở câu 6.
-
-18. **Hỏi:** Vì sao cần học các phép dịch, gấp, cộng trước khi thiết kế lọc?  
-   **Đáp:** Vì đó là nền tảng để hiểu hệ LTI và đáp ứng xung.  
-   **Vì sao:** Bộ lọc số thực chất là biến đổi tín hiệu rời rạc theo quy luật xác định.  
-   **Liên kết:** Tổng hợp câu 11 đến 17.
-
-19. **Hỏi:** Dịch và gấp có làm đổi năng lượng không?  
-   **Đáp:** Không, trong trường hợp chỉ đổi vị trí mẫu.  
-   **Vì sao:** Tập giá trị biên độ không thay đổi.  
-   **Liên kết:** Gắn với khái niệm năng lượng ở câu 7.
-
-20. **Hỏi:** Chương 1 của code nhằm mục đích gì?  
-   **Đáp:** Xác nhận các thao tác tín hiệu rời rạc hoạt động đúng trước khi sang phần lọc.  
-   **Vì sao:** Nếu phần nền sai, mọi bước phân tích sau sẽ sai theo.  
-   **Liên kết:** Tổng kết phần B.
+Lý do: đây là nhóm câu bao phủ đầy đủ chuỗi logic bảo vệ đồ án:
+Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính bậc và tham số; ổn định pole-zero; ứng dụng notch + SNR; kết luận kỹ thuật.
 
 ---
 
-## PHẦN C — BIẾN ĐỔI Z VÀ HỆ LTI
+## B. 100 CÂU HỎI – ĐÁP CHI TIẾT
 
-21. **Hỏi:** Hệ LTI là gì?  
-   **Đáp:** Là hệ tuyến tính và bất biến theo thời gian.  
-   **Vì sao:** Đây là lớp hệ quan trọng nhất trong DSP vì dễ phân tích và thiết kế.  
-   **Liên kết:** Là cầu nối sang biến đổi Z.
+### PHẦN 1 — NỀN TẢNG DSP VÀ LẤY MẪU
 
-22. **Hỏi:** Vì sao hệ LTI quan trọng trong bộ lọc số?  
-   **Đáp:** Vì bộ lọc số tiêu chuẩn thường được mô hình hóa là hệ LTI.  
-   **Vì sao:** Khi đó có thể dùng đáp ứng xung, hàm truyền và phổ để phân tích.  
-   **Liên kết:** Dựa trên câu 21.
+**Câu 1.** **DSP là gì?**  
+**Đáp:** DSP là xử lý số tín hiệu bằng thuật toán trên dữ liệu rời rạc.  
+**Vì sao:** Tín hiệu sau số hóa mới xử lý được bằng máy tính.  
+**Liên kết:** Nền cho toàn bộ tài liệu.
 
-23. **Hỏi:** Biến đổi Z dùng để làm gì?  
-   **Đáp:** Dùng để đưa hệ rời rạc sang miền phức nhằm phân tích thuận tiện hơn.  
-   **Vì sao:** Trong miền Z, phương trình sai phân trở thành dạng đại số.  
-   **Liên kết:** Kế tiếp câu 21 và 22.
+**Câu 2.** **Tín hiệu âm thanh số là gì?**  
+**Đáp:** Tín hiệu analog đã qua lấy mẫu và lượng tử hóa.  
+**Vì sao:** Máy tính lưu và xử lý ở dạng số.  
+**Liên kết:** Dựa trên câu 1.
 
-24. **Hỏi:** Hàm truyền đạt rời rạc có dạng gì?  
-   **Đáp:** $H(z)=\frac{B(z)}{A(z)}$.  
-   **Vì sao:** Tử số tạo zero, mẫu số tạo pole.  
-   **Liên kết:** Dẫn sang câu 25 và 26.
+**Câu 3.** **`Fs` là gì?**  
+**Đáp:** Tần số lấy mẫu, số mẫu/giây.  
+**Vì sao:** Quyết định độ phân giải thời gian và giới hạn phổ.  
+**Liên kết:** Dẫn đến Nyquist.
 
-25. **Hỏi:** Zero là gì?  
-   **Đáp:** Là nghiệm của tử số.  
-   **Vì sao:** Tại đó đáp ứng bằng 0.  
-   **Liên kết:** Dựa trên câu 24.
+**Câu 4.** 🔴 **Định lý Nyquist–Shannon là gì?**  
+**Đáp:** Cần $F_s \ge 2f_{max}$.  
+**Vì sao:** Nếu thấp hơn sẽ aliasing.  
+**Liên kết:** Câu 5, 31, 36.
 
-26. **Hỏi:** Pole là gì?  
-   **Đáp:** Là nghiệm của mẫu số.  
-   **Vì sao:** Vị trí pole quyết định mạnh đến ổn định và dạng đáp ứng.  
-   **Liên kết:** Dựa trên câu 24.
+**Câu 5.** 🔴 **Vì sao với tín hiệu có $f_{max}=3000$ Hz, chọn `Fs=44.1 kHz` là an toàn?**  
+**Đáp:** Vì $44100 \gg 2\times3000=6000$ Hz.  
+**Vì sao:** Khoảng cách lớn giúp tránh aliasing trong mô phỏng.  
+**Liên kết:** Câu 4, 31.
 
-27. **Hỏi:** Điều kiện ổn định của hệ rời rạc là gì?  
-   **Đáp:** Mọi pole phải nằm trong vòng tròn đơn vị.  
-   **Vì sao:** Khi đó đáp ứng tự do suy giảm theo thời gian.  
-   **Liên kết:** Gắn trực tiếp với câu 26.
+**Câu 6.** **Rời rạc hóa trong code dùng phương pháp gì?**  
+**Đáp:** Lấy mẫu đều: $x[n]=x(nT_s)$.  
+**Vì sao:** Đây là chuẩn trong DSP.  
+**Liên kết:** `modules/sampling_demo.py`.
 
-28. **Hỏi:** `zplane()` trong code làm gì?  
-   **Đáp:** Vẽ zero, pole và vòng tròn đơn vị.  
-   **Vì sao:** Đây là cách trực quan nhất để kiểm tra ổn định.  
-   **Liên kết:** Dựa trên câu 25 đến 27.
+**Câu 7.** **`Ts` được tính thế nào?**  
+**Đáp:** $T_s=1/F_s$.  
+**Vì sao:** Định nghĩa nghịch đảo tần số lấy mẫu.  
+**Liên kết:** Câu 6.
 
-29. **Hỏi:** `residuez()` dùng để làm gì?  
-   **Đáp:** Phân tích hàm truyền thành tổng các phân thức đơn giản.  
-   **Vì sao:** Điều này giúp hiểu cấu trúc cực và đáp ứng thời gian của hệ.  
-   **Liên kết:** Liên hệ với câu 23 và 24.
+**Câu 8.** **Tín hiệu gốc mô phỏng gồm những thành phần nào?**  
+**Đáp:** 440 Hz, 1000 Hz, 3000 Hz.  
+**Vì sao:** Dễ quan sát phổ và kiểm tra Nyquist.  
+**Liên kết:** Câu 5.
 
-30. **Hỏi:** Vì sao phải học Z-plane trước khi sang IIR?  
-   **Đáp:** Vì IIR phụ thuộc mạnh vào vị trí pole.  
-   **Vì sao:** Nếu không hiểu pole thì khó đánh giá ổn định.  
-   **Liên kết:** Tổng kết phần C.
+**Câu 9.** **Alias frequency là gì?**  
+**Đáp:** Là tần số sai xuất hiện sau lấy mẫu thiếu.  
+**Vì sao:** Thành phần vượt Nyquist bị gấp phổ.  
+**Liên kết:** Câu 10.
 
----
+**Câu 10.** **Trong phản ví dụ `Fs=4 kHz`, thành phần 3 kHz alias về đâu?**  
+**Đáp:** Về khoảng 1 kHz.  
+**Vì sao:** 3 kHz nằm ngoài Nyquist 2 kHz nên bị gấp.  
+**Liên kết:** `alias_frequency()`.
 
-## PHẦN D — PHÂN TÍCH INPUT CHO BÀI TOÁN
+**Câu 11.** **Vì sao cần vẽ cả time-domain và FFT ở phần sampling?**  
+**Đáp:** Time-domain cho trực giác mẫu; FFT cho bằng chứng aliasing/phổ.  
+**Vì sao:** Hai miền bổ sung nhau.  
+**Liên kết:** Hình 01 và 02.
 
-31. **Hỏi:** Input chính của bài toán low-pass là gì?  
-   **Đáp:** Là tín hiệu audio được giả thiết cần giữ dưới 4.41 kHz và suy giảm trên 6.615 kHz.  
-   **Vì sao:** Các ngưỡng này đến từ $\omega_p=0.2\pi$ và $\omega_s=0.3\pi$.  
-   **Liên kết:** Kết hợp khái niệm `Fs` từ phần A với thiết kế lọc.
+**Câu 12.** **`--no-plots` dùng để làm gì?**  
+**Đáp:** Chạy headless, không bật cửa sổ đồ thị.  
+**Vì sao:** Thuận tiện debug/CI/server.  
+**Liên kết:** CLI chính.
 
-32. **Hỏi:** Làm sao đổi từ $\omega_p$ sang Hz?  
-   **Đáp:** Dùng $f=\frac{\omega F_s}{2\pi}$.  
-   **Vì sao:** Đây là liên hệ giữa tần số chuẩn hóa và tần số vật lý.  
-   **Liên kết:** Cần để hiểu câu 31.
+**Câu 13.** **`--save-plots-dir` dùng để làm gì?**  
+**Đáp:** Xuất toàn bộ hình ra thư mục chỉ định.  
+**Vì sao:** Phục vụ báo cáo và tái lập kết quả.  
+**Liên kết:** `imgaes/v3`.
 
-33. **Hỏi:** Với `Fs=44.1 kHz`, $\omega_p=0.2\pi$ cho ra bao nhiêu?  
-   **Đáp:** $f_p=4410$ Hz.  
-   **Vì sao:** Thay trực tiếp vào công thức ở câu 32.  
-   **Liên kết:** Tiếp nối câu 32.
+**Câu 14.** **Vì sao bộ ảnh được đánh số 01..09?**  
+**Đáp:** Để map thứ tự với luồng phân tích trong báo cáo.  
+**Vì sao:** Tránh nhầm khi trích hình.  
+**Liên kết:** `BaoCao_HopNhat_V1_V2_V3.md`.
 
-34. **Hỏi:** Với `Fs=44.1 kHz`, $\omega_s=0.3\pi$ cho ra bao nhiêu?  
-   **Đáp:** $f_s=6615$ Hz.  
-   **Vì sao:** Tương tự cách tính ở câu 33.  
-   **Liên kết:** Cặp với câu 33.
+**Câu 15.** **Năng lượng tín hiệu dùng công thức nào?**  
+**Đáp:** $E=\sum |x(n)|^2$.  
+**Vì sao:** Là chuẩn đo năng lượng rời rạc.  
+**Liên kết:** Câu 86 (SNR).
 
-35. **Hỏi:** Dải chuyển tiếp là gì?  
-   **Đáp:** Là khoảng giữa mép dải thông và mép dải chắn.  
-   **Vì sao:** Ở đó bộ lọc chuyển từ trạng thái cho qua sang chặn.  
-   **Liên kết:** Dựa trên câu 33 và 34.
+**Câu 16.** **SNR là gì?**  
+**Đáp:** Tỷ số năng lượng tín hiệu/nhiễu (dB).  
+**Vì sao:** Đánh giá mức “sạch” sau xử lý.  
+**Liên kết:** Câu 85–86.
 
-36. **Hỏi:** Vì sao dải chuyển tiếp quan trọng?  
-   **Đáp:** Vì dải càng hẹp thì bộ lọc càng khó thiết kế và thường cần bậc cao hơn.  
-   **Vì sao:** Bộ lọc phải thay đổi đáp ứng nhanh hơn theo tần số.  
-   **Liên kết:** Sẽ liên quan trực tiếp đến bậc lọc ở các phần sau.
+**Câu 17.** **Vì sao 440 Hz thường dùng làm tín hiệu tham chiếu?**  
+**Đáp:** Là nốt La chuẩn, dễ nhận diện.  
+**Vì sao:** Thuận lợi so sánh trước/sau lọc.  
+**Liên kết:** Notch demo.
 
-37. **Hỏi:** Input của bài toán notch demo là gì?  
-   **Đáp:** Là sin 440 Hz cộng nhiễu 50 Hz và nhiễu Gaussian nhỏ.  
-   **Vì sao:** Đây là mô hình đơn giản nhưng sát với nhiễu điện lưới thực tế.  
-   **Liên kết:** Khác với bài toán low-pass tổng quát ở câu 31.
+**Câu 18.** **Khi nào cần anti-aliasing filter trước ADC?**  
+**Đáp:** Khi tín hiệu analog có thành phần gần/vượt $F_s/2$.  
+**Vì sao:** Lấy mẫu không tự loại nhiễu ngoài dải.  
+**Liên kết:** Phần phần cứng DSP.
 
-38. **Hỏi:** Vì sao 440 Hz được chọn làm tín hiệu hữu ích?  
-   **Đáp:** Vì đó là tần số chuẩn dễ nhận biết trong âm nhạc.  
-   **Vì sao:** Khi xem phổ, đỉnh 440 Hz rất dễ so với đỉnh 50 Hz.  
-   **Liên kết:** Hỗ trợ phân tích câu 37.
+**Câu 19.** **Phần mềm mô phỏng thay được phần cứng hoàn toàn không?**  
+**Đáp:** Không hoàn toàn.  
+**Vì sao:** Phần cứng còn có lượng tử hóa, trễ I/O, nhiễu thực.  
+**Liên kết:** Chương ứng dụng Lab-Volt.
 
-39. **Hỏi:** Vì sao 50 Hz là nhiễu điển hình?  
-   **Đáp:** Vì nhiều hệ điện lưới hoạt động ở 50 Hz.  
-   **Vì sao:** Nhiễu điện lưới thường ghép vào microphone, dây dẫn hoặc nguồn cấp.  
-   **Liên kết:** Cần để chọn notch ở phần sau.
-
-40. **Hỏi:** Tóm lại cần nhận diện input thế nào trước khi chọn lọc?  
-   **Đáp:** Phải biết phổ tín hiệu hữu ích nằm ở đâu, nhiễu nằm ở đâu và mục tiêu bảo toàn là gì.  
-   **Vì sao:** Chọn sai bộ lọc sẽ loại cả tín hiệu tốt.  
-   **Liên kết:** Tổng kết phần D.
+**Câu 20.** **Mục tiêu chính của khối sampling trong code mới là gì?**  
+**Đáp:** Chứng minh đúng/sai Nyquist bằng cả lý thuyết và hình ảnh.  
+**Vì sao:** Đây là điểm thường bị hỏi khi vấn đáp.  
+**Liên kết:** Câu 4, 10.
 
 ---
 
-## PHẦN E — FIR VÀ LÝ DO CHỌN
+### PHẦN 2 — THAO TÁC TÍN HIỆU RỜI RẠC VÀ HỆ LTI
 
-41. **Hỏi:** FIR là gì?  
-   **Đáp:** Là bộ lọc có đáp ứng xung hữu hạn.  
-   **Vì sao:** Đầu ra chỉ phụ thuộc vào số hữu hạn mẫu vào trước đó.  
-   **Liên kết:** Dùng để đối chiếu với IIR sau này.
+**Câu 21.** **`sigshift()` làm gì?**  
+**Đáp:** Dịch trục chỉ số của tín hiệu.  
+**Vì sao:** Mô phỏng trễ/sớm trong miền rời rạc.  
+**Liên kết:** `modules/signal_ops.py`.
 
-42. **Hỏi:** Vì sao FIR luôn ổn định?  
-   **Đáp:** Vì không có hồi tiếp.  
-   **Vì sao:** Không có cơ chế làm đáp ứng tăng vô hạn theo thời gian.  
-   **Liên kết:** So sánh với IIR ở phần G.
+**Câu 22.** **`sigfold()` làm gì?**  
+**Đáp:** Gấp tín hiệu: $x(n)\to x(-n)$.  
+**Vì sao:** Dùng trong phân tích tích chập/đối xứng.  
+**Liên kết:** Câu 21.
 
-43. **Hỏi:** Vì sao FIR phù hợp cho audio Hi-Fi?  
-   **Đáp:** Vì FIR có thể có pha tuyến tính.  
-   **Vì sao:** Pha tuyến tính làm các thành phần tần số bị trễ tương đối đồng đều.  
-   **Liên kết:** Dựa trên mục tiêu bảo toàn tín hiệu ở phần D.
+**Câu 23.** 🔴 **`sigadd()` vì sao dễ sai?**  
+**Đáp:** Vì phải căn chỉnh index trước khi cộng.  
+**Vì sao:** Lệch `n_start/n_stop` sẽ cộng sai vị trí mẫu.  
+**Liên kết:** Debug cơ bản trước khi lọc.
 
-44. **Hỏi:** Pha tuyến tính quan trọng thế nào?  
-   **Đáp:** Nó giảm méo dạng sóng trong miền thời gian.  
-   **Vì sao:** Các thành phần phổ không bị lệch nhau quá nhiều sau lọc.  
-   **Liên kết:** Giải thích sâu hơn cho câu 43.
+**Câu 24.** **Vì sao dùng `stem` cho tín hiệu rời rạc?**  
+**Đáp:** Thể hiện rõ từng mẫu tại từng chỉ số nguyên.  
+**Vì sao:** `plot` dễ gây nhầm là liên tục.  
+**Liên kết:** Hình 03.
 
-45. **Hỏi:** Vì sao code có `design_fir_hamming()`?  
-   **Đáp:** Để thiết kế FIR bằng phương pháp cửa sổ Hamming.  
-   **Vì sao:** Đây là phương pháp cơ bản, dễ hiểu và sát tài liệu học.  
-   **Liên kết:** Là bước thực thi cho khái niệm ở câu 41 đến 44.
+**Câu 25.** **Hệ LTI là gì?**  
+**Đáp:** Hệ tuyến tính và bất biến theo thời gian.  
+**Vì sao:** Là mô hình chuẩn của đa số bộ lọc số.  
+**Liên kết:** Câu 26.
 
-46. **Hỏi:** Vì sao chọn cửa sổ Hamming?  
-   **Đáp:** Vì nó giảm dao động Gibbs tốt hơn cửa sổ chữ nhật.  
-   **Vì sao:** Điều này giúp đáp ứng mượt hơn trong thực tế.  
-   **Liên kết:** Mở rộng câu 45.
+**Câu 26.** **Phương trình sai phân tổng quát có dạng gì?**  
+**Đáp:** $y(n)=\sum b_ix(n-i)-\sum a_jy(n-j)$.  
+**Vì sao:** Mô tả FIR/IIR theo miền thời gian.  
+**Liên kết:** FIR vs IIR.
 
-47. **Hỏi:** Bậc FIR Hamming được tính thế nào?  
-   **Đáp:** Theo công thức $M=\lceil 6.6\pi/\Delta\omega \rceil$.  
-   **Vì sao:** Đây là công thức xấp xỉ thường dùng cho cửa sổ Hamming.  
-   **Liên kết:** Dựa trên dải chuyển tiếp ở câu 35 và 36.
+**Câu 27.** 🔴 **Khác nhau cốt lõi giữa FIR và IIR ở phương trình sai phân?**  
+**Đáp:** IIR có hồi tiếp $y(n-j)$, FIR thì không.  
+**Vì sao:** Hồi tiếp tạo đáp ứng vô hạn và ảnh hưởng ổn định.  
+**Liên kết:** Câu 61–63.
 
-48. **Hỏi:** Vì sao với đề bài này `M = 66`?  
-   **Đáp:** Vì $\Delta\omega = 0.1\pi$, nên $M=\lceil 6.6\pi / 0.1\pi \rceil = 66$.  
-   **Vì sao:** Dải chuyển tiếp không quá rộng nên cần bậc tương đối lớn.  
-   **Liên kết:** Là kết quả trực tiếp từ câu 47.
+**Câu 28.** **Vì sao cần kiểm tra khối thao tác tín hiệu trước khối lọc?**  
+**Đáp:** Vì sai index nền sẽ làm sai mọi kết quả sau.  
+**Vì sao:** Lỗi thường lan truyền khó phát hiện.  
+**Liên kết:** Câu 23.
 
-49. **Hỏi:** Vì sao code tăng bậc lên số chẵn nếu cần?  
-   **Đáp:** Để được FIR Type-1 đối xứng.  
-   **Vì sao:** Type-1 phù hợp cho low-pass và cho pha tuyến tính tốt.  
-   **Liên kết:** Dựa trên câu 43 và 44.
+**Câu 29.** **`energy()` liên quan gì đến phần ứng dụng notch?**  
+**Đáp:** Dùng để tính SNR trước/sau lọc.  
+**Vì sao:** Cần số liệu định lượng, không chỉ nhìn đồ thị.  
+**Liên kết:** Câu 86.
 
-50. **Hỏi:** Nhược điểm của FIR Hamming là gì?  
-   **Đáp:** Cần nhiều hệ số hơn so với các phương pháp tối ưu.  
-   **Vì sao:** Phương pháp cửa sổ không tối ưu trực tiếp ripple giữa các dải.  
-   **Liên kết:** Dẫn sang Parks-McClellan.
-
----
-
-## PHẦN F — PARKS-MCCLELLAN VÀ FIR TỐI ƯU
-
-51. **Hỏi:** Parks-McClellan là gì?  
-   **Đáp:** Là thuật toán thiết kế FIR equiripple tối ưu.  
-   **Vì sao:** Nó giảm sai số cực đại theo chuẩn Chebyshev.  
-   **Liên kết:** Là lời giải cho nhược điểm ở câu 50.
-
-52. **Hỏi:** Trong Python dùng hàm nào cho Parks-McClellan?  
-   **Đáp:** Dùng `remez()`.  
-   **Vì sao:** `remez()` là hiện thực chuẩn của thuật toán này trong SciPy.  
-   **Liên kết:** Bản cài đặt cụ thể của câu 51.
-
-53. **Hỏi:** Vì sao vẫn chọn FIR Parks-McClellan thay vì bỏ hẳn FIR?  
-   **Đáp:** Vì vẫn muốn giữ lợi thế pha tuyến tính của FIR.  
-   **Vì sao:** Chỉ thay cách thiết kế để làm FIR gọn hơn.  
-   **Liên kết:** Kết nối câu 43 với câu 51.
-
-54. **Hỏi:** `delta1_db` và `delta2_db` là gì?  
-   **Đáp:** Là ripple dải thông và suy giảm dải chắn ở đơn vị dB.  
-   **Vì sao:** Đây là thông số đầu vào để ràng buộc chất lượng lọc.  
-   **Liên kết:** Cần để hiểu câu 55 và 56.
-
-55. **Hỏi:** Vì sao phải đổi dB sang biên độ tuyến tính?  
-   **Đáp:** Vì thuật toán tối ưu làm việc với sai số biên độ thực.  
-   **Vì sao:** dB chỉ là thang logarit để biểu diễn thuận tiện.  
-   **Liên kết:** Dựa trên câu 54.
-
-56. **Hỏi:** `weight` trong `remez()` có ý nghĩa gì?  
-   **Đáp:** Nó quy định dải nào quan trọng hơn khi tối ưu sai số.  
-   **Vì sao:** Có thể ưu tiên dải thông phẳng hơn hoặc dải chắn sâu hơn.  
-   **Liên kết:** Mở rộng câu 54 và 55.
-
-57. **Hỏi:** Vì sao Parks-McClellan cho bậc khoảng 20 trong code?  
-   **Đáp:** Vì với bộ chỉ tiêu ripple hiện tại, thuật toán tối ưu đạt yêu cầu với ít hệ số hơn Hamming.  
-   **Vì sao:** Đây là lợi thế tối ưu Chebyshev.  
-   **Liên kết:** So sánh trực tiếp với câu 48.
-
-58. **Hỏi:** Vậy FIR nào nên chọn nếu ưu tiên đơn giản?  
-   **Đáp:** Chọn Hamming.  
-   **Vì sao:** Dễ hiểu, dễ tính toán, sát giáo trình.  
-   **Liên kết:** So với câu 57.
-
-59. **Hỏi:** FIR nào nên chọn nếu ưu tiên ít hệ số hơn?  
-   **Đáp:** Chọn Parks-McClellan.  
-   **Vì sao:** Nó tối ưu hơn cùng mục tiêu low-pass.  
-   **Liên kết:** Dựa trên câu 57.
-
-60. **Hỏi:** Kết luận phần FIR là gì?  
-   **Đáp:** FIR phù hợp khi cần pha tuyến tính; Hamming dễ triển khai còn Parks-McClellan tối ưu hơn về số hệ số.  
-   **Vì sao:** Hai phương pháp cùng mục tiêu nhưng khác cách cân bằng giữa đơn giản và hiệu quả.  
-   **Liên kết:** Tổng hợp phần E và F.
+**Câu 30.** **Ý nghĩa của module hóa ở phần nền DSP?**  
+**Đáp:** Có thể test từng khối độc lập.  
+**Vì sao:** Giảm chi phí debug và tăng khả năng tái sử dụng.  
+**Liên kết:** `demo_runner.py`.
 
 ---
 
-## PHẦN G — IIR VÀ LÝ DO CHỌN BẬC NHỎ
+### PHẦN 3 — BIẾN ĐỔI Z, POLE-ZERO, ỔN ĐỊNH
 
-61. **Hỏi:** IIR là gì?  
-   **Đáp:** Là bộ lọc có đáp ứng xung vô hạn.  
-   **Vì sao:** Đầu ra có phụ thuộc vào đầu ra trước đó qua hồi tiếp.  
-   **Liên kết:** Đối chiếu với FIR ở câu 41.
+**Câu 31.** 🔴 **Hàm truyền đạt rời rạc có dạng nào?**  
+**Đáp:** $H(z)=B(z)/A(z)$.  
+**Vì sao:** Tử tạo zero, mẫu tạo pole.  
+**Liên kết:** Câu 32, 33.
 
-62. **Hỏi:** Vì sao IIR đạt đáp ứng dốc với bậc thấp?  
-   **Đáp:** Vì hồi tiếp làm hệ tạo ra đặc tính phổ mạnh hơn với ít hệ số hơn.  
-   **Vì sao:** Đây là bản chất của cấu trúc đệ quy.  
-   **Liên kết:** Mở rộng từ câu 61.
+**Câu 32.** **Zero là gì?**  
+**Đáp:** Nghiệm của tử số.  
+**Vì sao:** Tại đó đáp ứng bằng 0.  
+**Liên kết:** Câu 31.
 
-63. **Hỏi:** Nhược điểm chính của IIR là gì?  
-   **Đáp:** Pha phi tuyến và nguy cơ mất ổn định.  
-   **Vì sao:** Pole có thể gây méo pha và nếu ra ngoài vòng tròn đơn vị thì hệ không ổn định.  
-   **Liên kết:** Dựa trên phần C và câu 61.
+**Câu 33.** 🔴 **Pole là gì và vì sao quan trọng?**  
+**Đáp:** Nghiệm của mẫu số; quyết định ổn định và dạng đáp ứng.  
+**Vì sao:** Pole gần vòng tròn đơn vị làm hệ nhạy.  
+**Liên kết:** Câu 34.
 
-64. **Hỏi:** Vì sao trong đề tài vẫn cần IIR?  
-   **Đáp:** Vì báo cáo liên hệ đến DSP fixed-point cần tiết kiệm phép tính.  
-   **Vì sao:** IIR bậc thấp phù hợp triển khai thời gian thực hơn.  
-   **Liên kết:** Kết nối câu 62 và mục tiêu thực tế.
+**Câu 34.** 🔴 **Điều kiện ổn định BIBO của hệ rời rạc?**  
+**Đáp:** Mọi pole phải có $|p_k|<1$.  
+**Vì sao:** Khi đó đáp ứng tự do suy giảm theo thời gian.  
+**Liên kết:** Z-plane trong code.
 
-65. **Hỏi:** Vì sao chọn Chebyshev Type I?  
-   **Đáp:** Vì nó đạt sườn lọc dốc hơn Butterworth với cùng bậc.  
-   **Vì sao:** Chấp nhận ripple nhỏ trong dải thông để đổi lấy đáp ứng sắc hơn.  
-   **Liên kết:** Trả lời bài toán tiết kiệm bậc ở câu 64.
+**Câu 35.** **`zplane()` dùng để làm gì?**  
+**Đáp:** Vẽ zero, pole và vòng tròn đơn vị.  
+**Vì sao:** Kiểm tra ổn định trực quan nhất.  
+**Liên kết:** Hình 04.
 
-66. **Hỏi:** `cheb1ord()` làm gì?  
-   **Đáp:** Tính bậc nhỏ nhất thỏa ripple dải thông và suy giảm dải chắn.  
-   **Vì sao:** Không cần đoán bậc thủ công.  
-   **Liên kết:** Là công cụ chọn bậc cho câu 65.
+**Câu 36.** 🔴 **Nếu một pole nằm ngoài vòng tròn đơn vị thì sao?**  
+**Đáp:** Hệ mất ổn định.  
+**Vì sao:** Đáp ứng tự do tăng theo thời gian.  
+**Liên kết:** Câu 34.
 
-67. **Hỏi:** Với `Rp=1 dB` và `Rs=15 dB`, vì sao bậc là 4?  
-   **Đáp:** Vì `cheb1ord()` cho thấy chỉ cần bậc 4 là đủ thỏa yêu cầu.  
-   **Vì sao:** Chebyshev Type I khá hiệu quả về độ dốc.  
-   **Liên kết:** Kết quả trực tiếp từ câu 66.
+**Câu 37.** **`residuez()` cho ta thông tin gì?**  
+**Đáp:** Thặng dư, pole, hằng số của khai triển phân thức.  
+**Vì sao:** Hỗ trợ hiểu cấu trúc hệ và đáp ứng thời gian.  
+**Liên kết:** Câu 31.
 
-68. **Hỏi:** Vì sao bậc IIR nhỏ hơn FIR rất nhiều?  
-   **Đáp:** Vì IIR dùng hồi tiếp còn FIR thì không.  
-   **Vì sao:** Hồi tiếp tăng hiệu quả phổ nhưng đánh đổi pha và ổn định.  
-   **Liên kết:** So sánh câu 48, 57 và 67.
+**Câu 38.** **Vì sao phải học Z-transform trước IIR?**  
+**Đáp:** Vì IIR phụ thuộc mạnh vào vị trí pole.  
+**Vì sao:** Không hiểu pole thì khó bảo đảm ổn định.  
+**Liên kết:** Câu 63.
 
-69. **Hỏi:** `cheby1()` làm gì trong code?  
-   **Đáp:** Sinh hệ số số cho bộ lọc IIR Chebyshev Type I.  
-   **Vì sao:** Sau khi đã biết bậc và tần số cắt, cần tạo hệ số thực thi.  
-   **Liên kết:** Kế sau câu 66 và 67.
+**Câu 39.** **Trong demo hiện tại hệ ví dụ Z có ổn định không?**  
+**Đáp:** Có, pole nằm trong vòng tròn đơn vị.  
+**Vì sao:** Kết quả in ra và hình xác nhận.  
+**Liên kết:** Hình 04.
 
-70. **Hỏi:** Kết luận phần IIR là gì?  
-   **Đáp:** Nếu ưu tiên hiệu quả tính toán thì IIR Chebyshev Type I là lựa chọn mạnh, nhưng phải chấp nhận pha phi tuyến.  
-   **Vì sao:** Đây là đánh đổi cốt lõi giữa FIR và IIR.  
-   **Liên kết:** Tổng hợp phần G.
-
----
-
-## PHẦN H — BILINEAR TRANSFORM VÀ TÍNH THAM SỐ
-
-71. **Hỏi:** Vì sao báo cáo nhắc đến bilinear transform?  
-   **Đáp:** Vì đó là phép đổi từ bộ lọc analog sang digital mà tránh aliasing.  
-   **Vì sao:** Nó ánh xạ toàn bộ trục tần số analog vào miền số hữu hạn.  
-   **Liên kết:** Gắn với IIR ở phần G.
-
-72. **Hỏi:** Vì sao cần pre-warp?  
-   **Đáp:** Vì bilinear transform làm méo trục tần số.  
-   **Vì sao:** Nếu không pre-warp, điểm cắt sau biến đổi sẽ lệch khỏi yêu cầu.  
-   **Liên kết:** Bước bắt buộc để hiểu câu 73 và 74.
-
-73. **Hỏi:** Công thức pre-warp là gì?  
-   **Đáp:** $\Omega = \frac{2}{T}\tan\left(\frac{\omega}{2}\right)$.  
-   **Vì sao:** Đây là quan hệ chuẩn của bilinear transform.  
-   **Liên kết:** Dựa trên câu 72.
-
-74. **Hỏi:** Trong đề tài, $\Omega_p$ và $\Omega_s$ khoảng bao nhiêu?  
-   **Đáp:** $\Omega_p \approx 28657.92$ rad/s và $\Omega_s \approx 44940.14$ rad/s.  
-   **Vì sao:** Thay $F_s=44.1$ kHz, $\omega_p=0.2\pi$, $\omega_s=0.3\pi$ vào công thức.  
-   **Liên kết:** Từ câu 73.
-
-75. **Hỏi:** Vì sao vẫn in `OmegaP`, `OmegaS` trong code dù `SciPy` thiết kế digital trực tiếp được?  
-   **Đáp:** Để bám sát giải thích lý thuyết trong báo cáo.  
-   **Vì sao:** Đây là cách nối giữa MATLAB gốc và Python.  
-   **Liên kết:** Liên quan trực tiếp câu 71 đến 74.
-
-76. **Hỏi:** Vì sao phải đổi từ tần số chuẩn hóa sang Hz?  
-   **Đáp:** Vì Hz giúp hiểu ý nghĩa vật lý của bài toán âm thanh.  
-   **Vì sao:** Người làm audio quan tâm trực tiếp đến dải tần nghe được.  
-   **Liên kết:** Quay lại phần D.
-
-77. **Hỏi:** Vì sao phải đổi tiếp sang miền analog với $\Omega$?  
-   **Đáp:** Vì bilinear transform xuất phát từ thiết kế analog.  
-   **Vì sao:** Các họ IIR cổ điển thường được xây dựng trước ở miền analog.  
-   **Liên kết:** Mở rộng câu 71 đến 75.
-
-78. **Hỏi:** Tham số nào quyết định độ sắc của bộ lọc?  
-   **Đáp:** Chủ yếu là dải chuyển tiếp và các ràng buộc ripple/suy giảm.  
-   **Vì sao:** Chúng định nghĩa bộ lọc phải đổi từ cho qua sang chặn nhanh đến mức nào.  
-   **Liên kết:** Liên hệ phần D, E, F, G.
-
-79. **Hỏi:** Vì sao bộ lọc có dải chuyển tiếp hẹp thì cần bậc cao hơn?  
-   **Đáp:** Vì đáp ứng cần đổi nhanh hơn trong miền tần số.  
-   **Vì sao:** Đây là giới hạn bản chất của các thiết kế lọc thực tế.  
-   **Liên kết:** Trả lời sâu thêm cho câu 36 và 78.
-
-80. **Hỏi:** Kết luận phần tính tham số là gì?  
-   **Đáp:** Mọi lựa chọn bộ lọc đều phải bắt đầu từ thông số phổ của input và đổi đúng giữa các miền biểu diễn.  
-   **Vì sao:** Nếu tham số sai thì thiết kế sai dù thuật toán đúng.  
-   **Liên kết:** Tổng kết phần H.
+**Câu 40.** **Tại sao nói Z-plane là công cụ vấn đáp “đinh”?**  
+**Đáp:** Vì chỉ bằng 1 hình có thể trả lời cả ổn định + đặc tính hệ.  
+**Vì sao:** Câu hỏi hội đồng hay đi thẳng vào pole-zero.  
+**Liên kết:** 31–36.
 
 ---
 
-## PHẦN I — NOTCH, SNR VÀ ỨNG DỤNG THỰC TẾ
+### PHẦN 4 — PHÂN TÍCH INPUT VÀ THÔNG SỐ THIẾT KẾ
 
-81. **Hỏi:** Vì sao không dùng low-pass để bỏ nhiễu 50 Hz?  
-   **Đáp:** Vì low-pass có thể giữ lại 50 Hz nếu dải thông còn thấp, hoặc làm mất nhiều thành phần hữu ích nếu cắt quá gắt.  
-   **Vì sao:** Nhiễu ở đây là hẹp băng, không phải toàn bộ tần cao.  
-   **Liên kết:** Dựa trên phân tích input ở câu 37 đến 40.
+**Câu 41.** 🔴 **Input chính của bài toán low-pass là gì?**  
+**Đáp:** Giữ tốt dưới 4.41 kHz, suy giảm mạnh từ 6.615 kHz trở lên.  
+**Vì sao:** Từ $\omega_p=0.2\pi$, $\omega_s=0.3\pi$ với $F_s=44.1$ kHz.  
+**Liên kết:** Câu 42, 43.
 
-82. **Hỏi:** Vì sao notch là lựa chọn chính xác cho nhiễu điện lưới?  
-   **Đáp:** Vì nó chỉ chặn vùng rất hẹp quanh 50 Hz.  
-   **Vì sao:** Điều này bảo toàn tốt hơn phần phổ còn lại.  
-   **Liên kết:** Trả lời trực tiếp câu 81.
+**Câu 42.** **Đổi từ tần số chuẩn hóa sang Hz theo công thức nào?**  
+**Đáp:** $f=\omega F_s/(2\pi)$.  
+**Vì sao:** Liên hệ giữa miền chuẩn hóa và miền vật lý.  
+**Liên kết:** Câu 41.
 
-83. **Hỏi:** `Q` trong notch filter là gì?  
-   **Đáp:** Là hệ số chất lượng, quyết định độ hẹp của dải chắn.  
-   **Vì sao:** `Q` càng lớn thì notch càng hẹp.  
-   **Liên kết:** Cần để hiểu cách tinh chỉnh notch.
+**Câu 43.** 🔴 **Tính nhanh $f_p$ và $f_s$ từ đề bài?**  
+**Đáp:** $f_p=4410$ Hz, $f_s=6615$ Hz.  
+**Vì sao:** Thay trực tiếp vào công thức câu 42.  
+**Liên kết:** Câu 47.
 
-84. **Hỏi:** Vì sao code chọn `Q = 30`?  
-   **Đáp:** Vì cần chặn đủ rõ 50 Hz nhưng không ăn quá nhiều vùng lân cận.  
-   **Vì sao:** Đây là giá trị cân bằng hợp lý cho demo.  
-   **Liên kết:** Dựa trên câu 83.
+**Câu 44.** **Dải chuyển tiếp là gì?**  
+**Đáp:** Khoảng từ mép dải thông đến mép dải chắn.  
+**Vì sao:** Bộ lọc chuyển từ pass sang stop tại đây.  
+**Liên kết:** Câu 45.
 
-85. **Hỏi:** SNR là gì?  
-   **Đáp:** Là tỷ số năng lượng tín hiệu trên năng lượng nhiễu.  
-   **Vì sao:** Đây là cách đo mức sạch của tín hiệu sau xử lý.  
-   **Liên kết:** Gắn với hàm `energy()` ở phần A.
+**Câu 45.** **Dải chuyển tiếp ảnh hưởng gì đến bậc lọc?**  
+**Đáp:** Càng hẹp → bậc càng cao.  
+**Vì sao:** Cần đáp ứng thay đổi gắt hơn theo tần số.  
+**Liên kết:** Câu 48.
 
-86. **Hỏi:** Vì sao SNR sau notch tăng?  
-   **Đáp:** Vì thành phần 50 Hz bị giảm mạnh, nên phần nhiễu còn lại nhỏ hơn.  
-   **Vì sao:** Bộ lọc tác động đúng vào nơi nhiễu tập trung.  
-   **Liên kết:** Dựa trên câu 82 và 85.
+**Câu 46.** **`design_analysis` module mới có vai trò gì?**  
+**Đáp:** In rõ 3 khối: phân tích input, lý do chọn lọc, tính tham số.  
+**Vì sao:** Đúng chuỗi trả lời khi vấn đáp.  
+**Liên kết:** `modules/design_analysis.py`.
 
-87. **Hỏi:** Vì sao phổ FFT trước và sau lọc cần được vẽ?  
-   **Đáp:** Vì phổ cho thấy trực quan đỉnh 50 Hz đã giảm chưa.  
-   **Vì sao:** SNR chỉ là con số tổng hợp, còn FFT cho cái nhìn chi tiết.  
-   **Liên kết:** Bổ sung cho câu 86.
+**Câu 47.** 🔴 **Vì sao FIR Hamming ra bậc 66 trong bài này?**  
+**Đáp:** Do $M=\lceil 6.6\pi/\Delta\omega\rceil$ với $\Delta\omega=0.1\pi$.  
+**Vì sao:** Đây là công thức xấp xỉ chuẩn cho Hamming.  
+**Liên kết:** Câu 48.
 
-88. **Hỏi:** Vì sao demo dùng cả waveform và FFT?  
-   **Đáp:** Vì waveform cho thấy dạng sóng còn FFT cho thấy thành phần tần số.  
-   **Vì sao:** Hai góc nhìn này bổ sung cho nhau.  
-   **Liên kết:** Từ câu 87.
+**Câu 48.** 🔴 **Tại sao phải làm tròn bậc về dạng phù hợp Type-1?**  
+**Đáp:** Để đảm bảo đối xứng và hỗ trợ pha tuyến tính.  
+**Vì sao:** FIR Type-1 phù hợp low-pass.  
+**Liên kết:** Câu 43, 57.
 
-89. **Hỏi:** Nếu nhiễu không nằm đúng 50 Hz mà trôi nhẹ thì sao?  
-   **Đáp:** Có thể phải giảm `Q` hoặc dùng adaptive notch.  
-   **Vì sao:** Notch quá hẹp có thể bỏ sót nhiễu nếu tần số nhiễu thay đổi.  
-   **Liên kết:** Dựa trên câu 83 và 84.
+**Câu 49.** **Trong phần IIR, các thông số `Rp`, `Rs` nghĩa là gì?**  
+**Đáp:** Ripple dải thông và suy giảm dải chắn (dB).  
+**Vì sao:** Là ràng buộc chất lượng thiết kế.  
+**Liên kết:** Câu 67.
 
-90. **Hỏi:** Kết luận của phần ứng dụng notch là gì?  
-   **Đáp:** Khi biết rõ nhiễu đơn tần, notch filter thường là phương án tối ưu nhất.  
-   **Vì sao:** Nó loại nhiễu chính xác mà ít làm tổn thương tín hiệu hữu ích.  
-   **Liên kết:** Tổng kết phần I.
+**Câu 50.** **Vì sao cần cả số liệu in console và đồ thị?**  
+**Đáp:** Console cho số định lượng, đồ thị cho trực quan kiểm chứng.  
+**Vì sao:** Hai loại bằng chứng bổ sung nhau.  
+**Liên kết:** Toàn pipeline.
 
 ---
 
-## PHẦN J — ECHO, DEBUG VÀ KIẾN TRÚC MODULE
+### PHẦN 5 — FIR: HAMMING & PARKS-MCCLELLAN
 
-91. **Hỏi:** `simulate_echo()` mô phỏng điều gì?  
-   **Đáp:** Mô phỏng tiếng vọng trễ theo công thức $y(n)=x(n)+\alpha x(n-D)$.  
-   **Vì sao:** Đây là mô hình đơn giản của âm phản xạ đến trễ hơn âm gốc.  
-   **Liên kết:** Ứng dụng khác của DSP ngoài lọc phổ.
+**Câu 51.** 🔴 **FIR là gì và ưu điểm lớn nhất là gì?**  
+**Đáp:** Bộ lọc đáp ứng hữu hạn; ưu điểm lớn là ổn định và pha tốt.  
+**Vì sao:** Không có hồi tiếp nên ổn định cấu trúc.  
+**Liên kết:** Câu 61.
 
-92. **Hỏi:** Vì sao tăng `delay_ms` làm tiếng vọng nghe xa hơn?  
-   **Đáp:** Vì âm phản xạ xuất hiện muộn hơn.  
-   **Vì sao:** Khoảng trễ lớn hơn tương ứng quãng đường phản xạ lớn hơn.  
-   **Liên kết:** Dựa trên câu 91.
+**Câu 52.** **Vì sao FIR hợp với âm thanh Hi-Fi?**  
+**Đáp:** Vì có thể đạt pha tuyến tính tốt.  
+**Vì sao:** Giảm méo dạng sóng theo thời gian.  
+**Liên kết:** Câu 43.
 
-93. **Hỏi:** Vì sao tăng `decay` làm echo mạnh hơn?  
-   **Đáp:** Vì hệ số nhân của nhánh trễ lớn hơn.  
-   **Vì sao:** Năng lượng phần âm phản xạ được giữ lại nhiều hơn.  
-   **Liên kết:** Mở rộng câu 91.
+**Câu 53.** **Hamming window giải quyết vấn đề gì?**  
+**Đáp:** Giảm dao động Gibbs so với cửa sổ chữ nhật.  
+**Vì sao:** Làm đáp ứng mượt hơn.  
+**Liên kết:** Câu 47.
 
-94. **Hỏi:** Vì sao code được tách thành module?  
-   **Đáp:** Để từng phần có thể chạy độc lập và debug dễ hơn.  
-   **Vì sao:** File quá dài sẽ khó theo dõi lỗi và khó tái sử dụng.  
-   **Liên kết:** Liên hệ với yêu cầu thực tế của dự án.
+**Câu 54.** **Parks-McClellan là gì?**  
+**Đáp:** Thuật toán thiết kế FIR equiripple tối ưu Chebyshev.  
+**Vì sao:** Giảm sai số cực đại theo trọng số dải.  
+**Liên kết:** Câu 55, 56.
 
-95. **Hỏi:** Module nào quản lý style biểu đồ?  
-   **Đáp:** [modules/plot_config.py](modules/plot_config.py).  
-   **Vì sao:** Tách riêng giúp mọi biểu đồ nhất quán và dễ chỉnh.  
-   **Liên kết:** Ví dụ của kiến trúc module ở câu 94.
+**Câu 55.** **Trong Python dùng hàm nào cho Parks-McClellan?**  
+**Đáp:** `remez()`.  
+**Vì sao:** Triển khai chuẩn thuật toán equiripple.  
+**Liên kết:** `modules/fir_filters.py`.
 
-96. **Hỏi:** Module nào điều phối toàn bộ demo?  
-   **Đáp:** [modules/demo_runner.py](modules/demo_runner.py).  
-   **Vì sao:** Nó gom luồng chạy và dữ liệu trả về từ mọi phần.  
-   **Liên kết:** Tiếp nối câu 94.
+**Câu 56.** **`weight` trong `remez` có tác dụng gì?**  
+**Đáp:** Ưu tiên sai số giữa passband và stopband.  
+**Vì sao:** Điều chỉnh trade-off theo mục tiêu thiết kế.  
+**Liên kết:** Câu 54.
 
-97. **Hỏi:** Vì sao thêm tùy chọn `--no-plots`?  
-   **Đáp:** Để chạy trên môi trường không có giao diện hoặc khi cần debug nhanh.  
-   **Vì sao:** `matplotlib` có thể gây bất tiện khi chạy headless.  
-   **Liên kết:** Gắn với file chính [dsp_audio_filter.py](dsp_audio_filter.py).
+**Câu 57.** 🔴 **Vì sao Parks-McClellan trong demo chỉ ~20 bậc còn Hamming 66?**  
+**Đáp:** Vì equiripple tối ưu hơn cửa sổ cố định.  
+**Vì sao:** Đạt chỉ tiêu với ít hệ số hơn.  
+**Liên kết:** Câu 47.
 
-98. **Hỏi:** Khi debug bộ lọc, nên xem những gì trước?  
-   **Đáp:** Xem input, thông số thiết kế, đáp ứng biên độ, pole/zero và kết quả đầu ra.  
-   **Vì sao:** Đây là chuỗi logic từ nguyên nhân đến kết quả.  
-   **Liên kết:** Tổng hợp gần như toàn bộ tài liệu.
+**Câu 58.** **Khi nào chọn Hamming thay vì PM?**  
+**Đáp:** Khi cần cách thiết kế đơn giản, dễ giải thích.  
+**Vì sao:** PM tối ưu hơn nhưng phức tạp hơn trong trình bày.  
+**Liên kết:** Vấn đáp chiến lược.
 
-99. **Hỏi:** Vì sao các câu hỏi trong tài liệu này phải có liên kết với nhau?  
-   **Đáp:** Vì DSP là chuỗi suy luận, không thể trả lời đúng câu khó nếu thiếu nền tảng từ câu dễ.  
-   **Vì sao:** Ví dụ muốn giải thích bậc IIR phải hiểu dải chuyển tiếp, ripple, pole và bilinear transform.  
-   **Liên kết:** Đây chính là nguyên tắc tổ chức tài liệu.
+**Câu 59.** **Khi nào chọn PM thay vì Hamming?**  
+**Đáp:** Khi muốn FIR gọn, giảm chi phí tính toán.  
+**Vì sao:** Số hệ số thấp hơn rõ rệt.  
+**Liên kết:** Câu 57.
 
-100. **Hỏi:** Tóm tắt logic lớn nhất của toàn đề tài là gì?  
-   **Đáp:** Phải phân tích đúng input trước, sau đó chọn đúng loại lọc, rồi mới tính đúng tham số và kiểm chứng bằng đồ thị cùng kết quả đầu ra.  
-   **Vì sao:** Đây là quy trình chuẩn để tránh chọn đúng thuật toán nhưng sai bài toán.  
-   **Liên kết:** Tổng kết toàn bộ 100 câu.
+**Câu 60.** **Kết luận nhanh phần FIR khi bị hỏi gấp?**  
+**Đáp:** FIR cho pha tốt; Hamming dễ triển khai, PM tối ưu hệ số.  
+**Vì sao:** Tóm đúng bản chất và trade-off.  
+**Liên kết:** 51–59.
+
+---
+
+### PHẦN 6 — IIR CHEBYSHEV TYPE I
+
+**Câu 61.** 🔴 **IIR là gì?**  
+**Đáp:** Bộ lọc đáp ứng vô hạn do có hồi tiếp.  
+**Vì sao:** Đầu ra phụ thuộc cả đầu ra trước.  
+**Liên kết:** Câu 27.
+
+**Câu 62.** **Ưu điểm lớn nhất của IIR trong bài này?**  
+**Đáp:** Đạt độ dốc tốt với bậc thấp.  
+**Vì sao:** Hiệu quả tính toán cao hơn FIR cùng yêu cầu gần tương đương.  
+**Liên kết:** Câu 67.
+
+**Câu 63.** 🔴 **Nhược điểm lớn nhất của IIR?**  
+**Đáp:** Pha phi tuyến và nguy cơ mất ổn định.  
+**Vì sao:** Pole có thể gây méo pha/không ổn định nếu đặt sai.  
+**Liên kết:** Câu 34.
+
+**Câu 64.** **Vì sao chọn Chebyshev Type I thay vì Butterworth?**  
+**Đáp:** Vì cho sườn dốc hơn với cùng bậc.  
+**Vì sao:** Chấp nhận ripple nhỏ dải thông để tăng độ sắc cạnh.  
+**Liên kết:** Câu 65.
+
+**Câu 65.** 🔴 **`cheb1ord()` dùng để làm gì?**  
+**Đáp:** Tính bậc tối thiểu thỏa `Rp`, `Rs`.  
+**Vì sao:** Tránh chọn bậc thủ công cảm tính.  
+**Liên kết:** Câu 67.
+
+**Câu 66.** **`cheby1()` làm gì?**  
+**Đáp:** Sinh hệ số bộ lọc Chebyshev Type I.  
+**Vì sao:** Từ bậc và tần số cắt để đưa vào lọc số.  
+**Liên kết:** Câu 65.
+
+**Câu 67.** 🔴 **Vì sao trong demo bậc IIR là 4?**  
+**Đáp:** Do `cheb1ord` với `Rp=1 dB`, `Rs=15 dB` trả về bậc tối thiểu 4.  
+**Vì sao:** Đủ thỏa chỉ tiêu đã đặt.  
+**Liên kết:** So với FIR 66/20.
+
+**Câu 68.** **Vì sao IIR thường ít hệ số hơn FIR?**  
+**Đáp:** Do có hồi tiếp nên “mạnh” hơn về đặc tính phổ.  
+**Vì sao:** Đây là bản chất cấu trúc đệ quy.  
+**Liên kết:** Câu 62.
+
+**Câu 69.** **`group_delay` cho IIR thường thế nào?**  
+**Đáp:** Không hằng theo tần số.  
+**Vì sao:** Pha IIR phi tuyến.  
+**Liên kết:** Hình 06, 07.
+
+**Câu 70.** **Kết luận nhanh phần IIR khi vấn đáp?**  
+**Đáp:** IIR tiết kiệm tài nguyên nhưng đánh đổi pha và yêu cầu kiểm soát ổn định.  
+**Vì sao:** Đây là trade-off cốt lõi.  
+**Liên kết:** 61–69.
+
+---
+
+### PHẦN 7 — BILINEAR, PRE-WARP, TÍNH THAM SỐ
+
+**Câu 71.** 🔴 **Vì sao nhắc bilinear transform trong báo cáo?**  
+**Đáp:** Vì đây là cầu nối analog prototype sang digital filter.  
+**Vì sao:** Tránh aliasing của đáp ứng analog khi ánh xạ.  
+**Liên kết:** Câu 72.
+
+**Câu 72.** 🔴 **Vì sao cần pre-warp?**  
+**Đáp:** Vì bilinear gây méo trục tần số.  
+**Vì sao:** Nếu không pre-warp sẽ lệch điểm cắt mong muốn.  
+**Liên kết:** Câu 73–74.
+
+**Câu 73.** **Công thức pre-warp là gì?**  
+**Đáp:** $\Omega=\frac{2}{T}\tan\left(\frac{\omega}{2}\right)$.  
+**Vì sao:** Quan hệ chuẩn của bilinear.  
+**Liên kết:** Câu 72.
+
+**Câu 74.** 🔴 **Trong đề tài, $\Omega_p$, $\Omega_s$ xấp xỉ bao nhiêu?**  
+**Đáp:** $\Omega_p\approx28657.92$ rad/s, $\Omega_s\approx44940.14$ rad/s.  
+**Vì sao:** Thay số từ $F_s=44.1$ kHz, $\omega_p=0.2\pi$, $\omega_s=0.3\pi$.  
+**Liên kết:** Câu 43.
+
+**Câu 75.** **Vì sao code vẫn in pre-warp dù thiết kế digital trực tiếp được?**  
+**Đáp:** Để bám sát logic lý thuyết và MATLAB trong báo cáo.  
+**Vì sao:** Giúp giải thích rõ khi bảo vệ.  
+**Liên kết:** `design_analysis.py`.
+
+**Câu 76.** **Tham số nào điều khiển độ sắc cạnh lọc?**  
+**Đáp:** Dải chuyển tiếp và ràng buộc ripple/suy giảm.  
+**Vì sao:** Chúng quyết định độ dốc cần đạt.  
+**Liên kết:** Câu 45.
+
+**Câu 77.** **Vì sao đổi từ chuẩn hóa sang Hz là bước bắt buộc?**  
+**Đáp:** Để diễn giải vật lý đúng với bài toán âm thanh.  
+**Vì sao:** Hội đồng thường hỏi bằng Hz, không hỏi bằng $\pi$.  
+**Liên kết:** Câu 42–43.
+
+**Câu 78.** **Khi nào cần dùng thêm frequency mapping?**  
+**Đáp:** Khi cần đổi low-pass chuẩn sang high-pass/band-pass/band-stop.  
+**Vì sao:** Dựa trên biến đổi miền tần số của mẫu thiết kế.  
+**Liên kết:** Phần lý thuyết Report.
+
+**Câu 79.** **Nếu dải chuyển tiếp thu hẹp một nửa thì chuyện gì thường xảy ra?**  
+**Đáp:** Bậc lọc cần tăng đáng kể.  
+**Vì sao:** Yêu cầu đáp ứng gắt hơn trong miền tần số.  
+**Liên kết:** Câu 45, 76.
+
+**Câu 80.** **Kết luận phần tham số khi trả lời vấn đáp?**  
+**Đáp:** Luôn đi theo chuỗi: đề bài → chuẩn hóa → Hz → (nếu IIR) pre-warp → bậc tối thiểu.  
+**Vì sao:** Trả lời theo quy trình sẽ thuyết phục và ít sót.  
+**Liên kết:** 41–79.
+
+---
+
+### PHẦN 8 — ỨNG DỤNG NOTCH 50 HZ VÀ ECHO
+
+**Câu 81.** 🔴 **Vì sao không dùng low-pass để khử nhiễu 50 Hz?**  
+**Đáp:** Vì nhiễu là hẹp băng tại 50 Hz, low-pass không tối ưu.  
+**Vì sao:** Có thể giữ nhầm 50 Hz hoặc làm mất thành phần hữu ích khác.  
+**Liên kết:** Câu 82.
+
+**Câu 82.** 🔴 **Vì sao notch là lựa chọn đúng cho nhiễu điện lưới?**  
+**Đáp:** Chặn rất hẹp quanh 50 Hz, bảo toàn phần phổ còn lại.  
+**Vì sao:** Tối ưu cho nhiễu đơn tần.  
+**Liên kết:** Hình 08.
+
+**Câu 83.** **`Q` trong notch filter là gì?**  
+**Đáp:** Hệ số chất lượng, quyết định độ hẹp notch.  
+**Vì sao:** `Q` lớn → notch hẹp; `Q` nhỏ → notch rộng.  
+**Liên kết:** Câu 84.
+
+**Câu 84.** **Vì sao demo chọn `Q=30`?**  
+**Đáp:** Cân bằng giữa khử đúng 50 Hz và không “ăn” dải lân cận.  
+**Vì sao:** Phù hợp bài toán minh họa thực tế.  
+**Liên kết:** Câu 83.
+
+**Câu 85.** **SNR trước/sau lọc trong demo là bao nhiêu?**  
+**Đáp:** Trước ~4.37 dB, sau ~11.33 dB.  
+**Vì sao:** Thành phần nhiễu 50 Hz giảm mạnh.  
+**Liên kết:** Câu 86.
+
+**Câu 86.** 🔴 **Vì sao SNR tăng chứng minh bộ lọc hiệu quả?**  
+**Đáp:** Vì tỷ lệ năng lượng tín hiệu/nhiễu được cải thiện định lượng.  
+**Vì sao:** Không chỉ “nhìn thấy đẹp” mà có số đo khách quan.  
+**Liên kết:** Câu 15, 16.
+
+**Câu 87.** **Vì sao phải xem cả waveform và FFT trong notch demo?**  
+**Đáp:** Waveform cho dạng sóng, FFT cho vị trí tần số nhiễu.  
+**Vì sao:** Hai miền xác nhận lẫn nhau.  
+**Liên kết:** Hình 08.
+
+**Câu 88.** **`simulate_echo()` dùng mô hình nào?**  
+**Đáp:** $y(n)=x(n)+\alpha x(n-D)$.  
+**Vì sao:** Mô hình echo rời rạc chuẩn, đơn giản và trực quan.  
+**Liên kết:** Hình 09.
+
+**Câu 89.** **Tăng `delay_ms` ảnh hưởng gì?**  
+**Đáp:** Tiếng vọng xuất hiện muộn hơn.  
+**Vì sao:** Số mẫu trễ $D$ tăng.  
+**Liên kết:** Câu 88.
+
+**Câu 90.** **Tăng `decay` ảnh hưởng gì?**  
+**Đáp:** Tiếng vọng mạnh hơn.  
+**Vì sao:** Hệ số nhân nhánh trễ lớn hơn.  
+**Liên kết:** Câu 88.
+
+---
+
+### PHẦN 9 — KIẾN TRÚC CODE, BÁO CÁO VÀ TÁI LẬP KẾT QUẢ
+
+**Câu 91.** **Vì sao phải tách module thay vì 1 file lớn?**  
+**Đáp:** Dễ debug, test, và mở rộng chức năng.  
+**Vì sao:** Giảm phụ thuộc chéo và giảm phạm vi lỗi.  
+**Liên kết:** `modules/*`.
+
+**Câu 92.** **`demo_runner.py` đóng vai trò gì?**  
+**Đáp:** Orchestrator gọi toàn bộ demo theo thứ tự logic.  
+**Vì sao:** Tạo pipeline nhất quán từ đầu đến cuối.  
+**Liên kết:** Luồng báo cáo hợp nhất.
+
+**Câu 93.** **`plot_config.py` ngoài style còn làm gì mới?**  
+**Đáp:** Hỗ trợ lưu ảnh bằng `build_save_path` và `finalize_figure(save_path=...)`.  
+**Vì sao:** Tự động hóa tạo tài liệu hình ảnh.  
+**Liên kết:** `--save-plots-dir`.
+
+**Câu 94.** **Bộ ảnh `imgaes/v3` dùng cho mục đích gì?**  
+**Đáp:** Là minh chứng trực quan gắn thẳng vào báo cáo khoa học.  
+**Vì sao:** Tăng tính tái lập và kiểm chứng.  
+**Liên kết:** BaoCao V3 và bản hợp nhất.
+
+**Câu 95.** **Vì sao báo cáo hợp nhất bỏ phần 9,10 cũ mà vẫn hợp lý?**  
+**Đáp:** Vì nội dung kết luận/tài liệu tham khảo được đánh lại số và vẫn đủ logic khoa học.  
+**Vì sao:** Không mất thông tin cốt lõi kỹ thuật.  
+**Liên kết:** `BaoCao_HopNhat_V1_V2_V3.md`.
+
+**Câu 96.** **Quy trình tạo HTML/PDF từ Markdown trong dự án hiện tại là gì?**  
+**Đáp:** Markdown → HTML (Python markdown) → PDF (WeasyPrint).  
+**Vì sao:** `pandoc` không có sẵn nên dùng tuyến thay thế khả dụng.  
+**Liên kết:** File hợp nhất PDF.
+
+**Câu 97.** **Khi bị hỏi “làm sao tái lập kết quả”, trả lời ngắn gọn thế nào?**  
+**Đáp:** Chạy `python dsp_audio_filter.py --no-plots --save-plots-dir imgaes/v3`, sau đó build báo cáo MD→HTML→PDF.  
+**Vì sao:** Đủ để tái sinh số liệu và ảnh.  
+**Liên kết:** Câu 93, 96.
+
+**Câu 98.** **Nếu hội đồng hỏi “đóng góp mới của bản code hiện tại là gì”, trả lời gì?**  
+**Đáp:** Có sampling+Nyquist+aliasing, module hóa rõ, xuất ảnh tự động, báo cáo hợp nhất tái lập.  
+**Vì sao:** Đây là khác biệt rõ so với bản MATLAB mô tả thuần lý thuyết.  
+**Liên kết:** So sánh V1–V3.
+
+**Câu 99.** **Nếu bị hỏi “hạn chế hiện tại”, nên nói gì?**  
+**Đáp:** Chưa chạy real-time trên DSP thật, chưa benchmark fixed-point, chưa xử lý WAV đa kênh đầy đủ.  
+**Vì sao:** Nêu đúng giới hạn giúp phần phản biện thuyết phục hơn.  
+**Liên kết:** Hướng phát triển.
+
+**Câu 100.** 🔴 **Câu chốt khi vấn đáp: “Toàn bộ quy trình kỹ thuật của đề tài là gì?”**  
+**Đáp:**  
+(1) Phân tích input và điều kiện lấy mẫu;  
+(2) rời rạc hóa và kiểm tra Nyquist/aliasing;  
+(3) thiết kế FIR/IIR theo thông số;  
+(4) kiểm tra ổn định và đáp ứng;  
+(5) ứng dụng notch/echo và đo SNR;  
+(6) xuất ảnh + hợp nhất báo cáo để tái lập.  
+**Vì sao:** Đây là chuỗi từ bài toán đến bằng chứng định lượng và tài liệu khoa học.  
+**Liên kết:** Tổng kết toàn bộ 99 câu trước.
+
+---
+
+## C. MẸO TRẢ LỜI VẤN ĐÁP NHANH (30–45 GIÂY/CÂU)
+
+- Mẫu trả lời tốt: **Định nghĩa ngắn → công thức/tiêu chí → số liệu của đề tài → kết luận**.
+- Với câu tính toán: luôn nói rõ đơn vị (Hz, rad/s, dB).
+- Với câu so sánh FIR/IIR: luôn nói theo dạng **trade-off**, tránh kết luận tuyệt đối.
+- Với câu ứng dụng: luôn nêu cả **hình** và **chỉ số** (ví dụ SNR).
+- Câu khó bị truy sâu nhất thường là: **Nyquist, bậc lọc, pole-zero ổn định, lý do chọn notch**.
+
+---
+
+## D. PHẦN CHUYÊN SÂU (DÙNG KHI HỘI ĐỒNG HỎI TRUY SÂU)
+
+### D.1 12 câu truy sâu rất hay gặp
+
+1) **Nếu $F_s > 2f_{max}$ rồi thì có chắc chắn không aliasing ngoài thực tế?**  
+**Đáp sâu:** Chưa chắc, vì điều kiện đó chỉ đúng khi tín hiệu analog đã bị giới hạn băng trước ADC. Nếu front-end không có anti-aliasing filter thì thành phần ngoài dải vẫn gấp phổ vào băng quan sát.  
+**Điểm ăn điểm:** Nêu rõ vai trò của khối anti-aliasing trong chuỗi đo.
+
+2) **Vì sao IIR bậc thấp nhưng vẫn đạt dốc tốt?**  
+**Đáp sâu:** Do cơ chế hồi tiếp tạo cực gần vòng tròn đơn vị, làm biên độ biến thiên mạnh theo tần số quanh vùng cắt. Đổi lại, pha phi tuyến tăng và hệ nhạy hơn với sai số hệ số.
+
+3) **Tại sao FIR thường được gọi là “an toàn hơn” trong audio?**  
+**Đáp sâu:** Không hồi tiếp nên ổn định cấu trúc; có thể ép đối xứng hệ số để gần pha tuyến tính, giảm méo dạng sóng trong miền thời gian.
+
+4) **Nếu yêu cầu stopband tăng từ 15 dB lên 40 dB thì chuyện gì xảy ra?**  
+**Đáp sâu:** Bậc lọc tăng (đặc biệt với FIR), chi phí MAC tăng, độ trễ nhóm tăng. Đây là trade-off giữa chất lượng lọc và tài nguyên tính toán.
+
+5) **Vì sao phải quan tâm group delay thay vì chỉ magnitude?**  
+**Đáp sâu:** Magnitude chỉ cho biết giữ/chặn biên độ, còn group delay cho biết biến dạng pha theo tần số. Audio nghe “méo” có thể do pha dù biên độ đạt chuẩn.
+
+6) **Parks-McClellan “tối ưu” theo nghĩa nào?**  
+**Đáp sâu:** Tối ưu chuẩn minimax (Chebyshev): cực tiểu hóa sai số lớn nhất có trọng số giữa các dải tần.
+
+7) **Sự khác nhau giữa pre-warp và đổi đơn vị tần số?**  
+**Đáp sâu:** Đổi đơn vị chỉ là chuyển chuẩn hóa ↔ Hz; pre-warp là hiệu chỉnh phi tuyến tần số trước bilinear để bù méo trục tần số.
+
+8) **Vì sao notch phù hợp hơn low-pass cho nhiễu 50 Hz?**  
+**Đáp sâu:** Vì nhiễu đơn tần/hẹp băng. Notch tác động cục bộ quanh 50 Hz nên bảo toàn phổ hữu ích tốt hơn lọc toàn dải.
+
+9) **SNR tăng có đủ kết luận bộ lọc tốt chưa?**  
+**Đáp sâu:** Chưa đủ. Cần nhìn thêm phổ FFT, độ méo pha, và cảm nhận theo ứng dụng (audio perceptual quality).
+
+10) **Nếu hội đồng hỏi “độ phức tạp tính toán” thì trả lời sao?**  
+**Đáp sâu:** So theo số phép nhân-cộng mỗi mẫu. FIR bậc $M$ cần xấp xỉ $M+1$ MAC/mẫu; IIR bậc thấp thường ít MAC hơn nhưng cần kiểm soát ổn định/sai số số học.
+
+11) **Khi nào kết quả mô phỏng khác phần cứng DSP thực?**  
+**Đáp sâu:** Khi có lượng tử hóa fixed-point, bão hòa số, trễ I/O, nhiễu đồng hồ, hoặc sai khác front-end analog.
+
+12) **Điểm chốt học thuật để bảo vệ đồ án này là gì?**  
+**Đáp sâu:** Khả năng chứng minh nhất quán 4 lớp: lý thuyết → tham số thiết kế → đồ thị kiểm chứng → chỉ số định lượng (SNR/ổn định/bậc lọc).
+
+### D.2 Công thức trọng điểm nên thuộc
+
+1. **Nyquist:** $F_s \ge 2f_{max}$  
+2. **Rời rạc hóa:** $x[n]=x(nT_s),\; T_s=1/F_s$  
+3. **Đổi chuẩn hóa sang Hz:** $f=\omega F_s/(2\pi)$  
+4. **Hàm truyền đạt:** $H(z)=B(z)/A(z)$  
+5. **Ổn định rời rạc:** $|p_k|<1$  
+6. **Pre-warp:** $\Omega=\frac{2}{T}\tan(\omega/2)$  
+7. **Hamming bậc gần đúng:** $M\approx\left\lceil\frac{6.6\pi}{\Delta\omega}\right\rceil$  
+8. **Echo:** $y(n)=x(n)+\alpha x(n-D)$
+
+### D.3 8 lỗi trả lời thường bị trừ điểm
+
+1. Nói “$F_s$ cao là đủ” nhưng quên anti-aliasing analog.  
+2. Chỉ nói magnitude, bỏ qua phase/group delay.  
+3. Nhầm giữa “ổn định theo pole” và “độ dốc theo magnitude”.  
+4. Nói FIR luôn “tốt hơn” IIR hoặc ngược lại (kết luận tuyệt đối).  
+5. Không nêu đơn vị khi tính toán (Hz, rad/s, dB).  
+6. Không gắn số liệu đề tài khi trả lời lý thuyết.  
+7. Nói notch tốt nhưng không chứng minh bằng FFT/SNR.  
+8. Trả lời dài nhưng thiếu cấu trúc định nghĩa → công thức → số liệu → kết luận.
+
+### D.4 Mẫu trả lời 20 giây cho 3 câu hay bị hỏi nhất
+
+**Mẫu 1 – Nyquist:**  
+“Trong đề tài, tín hiệu có $f_{max}=3$ kHz nên theo Nyquist cần $F_s\ge6$ kHz. Em dùng $F_s=44.1$ kHz nên thỏa điều kiện rất an toàn; đồng thời em có phản ví dụ $F_s=4$ kHz để chứng minh aliasing xuất hiện ở FFT.”
+
+**Mẫu 2 – Vì sao chọn IIR Chebyshev:**  
+“Em chọn IIR Chebyshev Type I vì cần bậc thấp để tiết kiệm MAC trên DSP fixed-point. Với ràng buộc $R_p=1$ dB, $R_s=15$ dB thì `cheb1ord` cho bậc tối thiểu $N=4$, đáp ứng độ dốc tốt nhưng chấp nhận pha phi tuyến.”
+
+**Mẫu 3 – Vì sao chọn notch 50 Hz:**  
+“Nhiễu là đơn tần tại 50 Hz nên notch là đúng bản chất bài toán hơn low-pass. Kết quả em chứng minh bằng cả phổ FFT và SNR: từ ~4.37 dB lên ~11.33 dB sau lọc.”

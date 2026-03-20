@@ -242,46 +242,7 @@ Hình mô phỏng:
 
 ---
 
-## 9. KIẾN TRÚC PHẦN MỀM VÀ QUY TRÌNH TÁI LẬP
-
-## 9.1 Kiến trúc module
-
-- Điều phối: `modules/demo_runner.py`
-- Sampling + Nyquist: `modules/sampling_demo.py`
-- Thao tác tín hiệu: `modules/signal_ops.py`
-- Z-transform: `modules/z_analysis.py`
-- FIR: `modules/fir_filters.py`
-- IIR: `modules/iir_filters.py`
-- So sánh FIR-IIR: `modules/comparison.py`
-- Ứng dụng notch/echo: `modules/applications.py`
-- Cấu hình và lưu hình: `modules/plot_config.py`
-
-## 9.2 Lệnh chạy
-
-Chạy hiển thị tương tác:
-
-```bash
-python dsp_audio_filter.py
-```
-
-Chạy headless + lưu ảnh:
-
-```bash
-python dsp_audio_filter.py --no-plots --save-plots-dir imgaes/v3
-```
-
----
-
-## 10. ĐÓNG GÓP MỚI SAU HỢP NHẤT 3 VERSION
-
-1. Chuẩn hóa mạch nội dung khoa học từ lý thuyết đến kiểm chứng thực nghiệm.
-2. Hợp nhất cả chiều sâu học thuật (Report), chiều sâu kiến trúc code (V2), và chiều sâu minh họa định lượng bằng hình (V3).
-3. Bổ sung khối kiểm chứng Nyquist + aliasing rõ ràng bằng phản ví dụ FFT.
-4. Chuẩn bị sẵn dữ liệu hình ảnh để phục vụ báo cáo học thuật và trình bày bảo vệ.
-
----
-
-## 11. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
+## 9. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
 
 Bản hợp nhất V1-V2-V3 đã đạt mục tiêu xây dựng một báo cáo nhất quán, khoa học và có khả năng tái lập cao. Hệ thống mô phỏng Python hiện không chỉ thay thế được phần MATLAB cốt lõi mà còn mở rộng tốt cho quy trình phân tích thực nghiệm bằng hình ảnh và chỉ số.
 
@@ -294,7 +255,7 @@ Hướng phát triển tiếp theo:
 
 ---
 
-## 12. TÀI LIỆU THAM KHẢO
+## 10. TÀI LIỆU THAM KHẢO
 
 1. A. V. Oppenheim, R. W. Schafer, *Digital Signal Processing*, Prentice Hall.  
 2. J. G. Proakis, D. G. Manolakis, *Digital Signal Processing: Principles, Algorithms, and Applications*.  

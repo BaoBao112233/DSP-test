@@ -12,7 +12,7 @@ h3 { font-size: 18px; }
 p, li { font-size: 13.5px; }
 img { max-width: 100%; height: auto; margin: 10px 0 16px 0; border: 1px solid #e5e7eb; }
 code { background: #f3f4f6; padding: 2px 5px; border-radius: 4px; font-family: 'DejaVu Sans Mono', monospace; }
-pre { background: #f8fafc; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px; overflow-x: auto; }
+pre { background: #f8fafc; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px; }
 table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
 th, td { border: 1px solid #d1d5db; padding: 8px; text-align: left; }
 th { background: #eef2ff; }
@@ -215,36 +215,7 @@ $$</p>
 <p>Hình mô phỏng:</p>
 <p><img alt="Echo demo" src="imgaes/v3/09_echo_demo.png" /></p>
 <hr />
-<h2>9. KIẾN TRÚC PHẦN MỀM VÀ QUY TRÌNH TÁI LẬP</h2>
-<h2>9.1 Kiến trúc module</h2>
-<ul>
-<li>Điều phối: <code>modules/demo_runner.py</code></li>
-<li>Sampling + Nyquist: <code>modules/sampling_demo.py</code></li>
-<li>Thao tác tín hiệu: <code>modules/signal_ops.py</code></li>
-<li>Z-transform: <code>modules/z_analysis.py</code></li>
-<li>FIR: <code>modules/fir_filters.py</code></li>
-<li>IIR: <code>modules/iir_filters.py</code></li>
-<li>So sánh FIR-IIR: <code>modules/comparison.py</code></li>
-<li>Ứng dụng notch/echo: <code>modules/applications.py</code></li>
-<li>Cấu hình và lưu hình: <code>modules/plot_config.py</code></li>
-</ul>
-<h2>9.2 Lệnh chạy</h2>
-<p>Chạy hiển thị tương tác:</p>
-<pre><code class="language-bash">python dsp_audio_filter.py
-</code></pre>
-<p>Chạy headless + lưu ảnh:</p>
-<pre><code class="language-bash">python dsp_audio_filter.py --no-plots --save-plots-dir imgaes/v3
-</code></pre>
-<hr />
-<h2>10. ĐÓNG GÓP MỚI SAU HỢP NHẤT 3 VERSION</h2>
-<ol>
-<li>Chuẩn hóa mạch nội dung khoa học từ lý thuyết đến kiểm chứng thực nghiệm.</li>
-<li>Hợp nhất cả chiều sâu học thuật (Report), chiều sâu kiến trúc code (V2), và chiều sâu minh họa định lượng bằng hình (V3).</li>
-<li>Bổ sung khối kiểm chứng Nyquist + aliasing rõ ràng bằng phản ví dụ FFT.</li>
-<li>Chuẩn bị sẵn dữ liệu hình ảnh để phục vụ báo cáo học thuật và trình bày bảo vệ.</li>
-</ol>
-<hr />
-<h2>11. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN</h2>
+<h2>9. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN</h2>
 <p>Bản hợp nhất V1-V2-V3 đã đạt mục tiêu xây dựng một báo cáo nhất quán, khoa học và có khả năng tái lập cao. Hệ thống mô phỏng Python hiện không chỉ thay thế được phần MATLAB cốt lõi mà còn mở rộng tốt cho quy trình phân tích thực nghiệm bằng hình ảnh và chỉ số.</p>
 <p>Hướng phát triển tiếp theo:</p>
 <ol>
@@ -254,7 +225,7 @@ $$</p>
 <li>Mở rộng sang xử lý đa kênh và pipeline thời gian thực.</li>
 </ol>
 <hr />
-<h2>12. TÀI LIỆU THAM KHẢO</h2>
+<h2>10. TÀI LIỆU THAM KHẢO</h2>
 <ol>
 <li>A. V. Oppenheim, R. W. Schafer, <em>Digital Signal Processing</em>, Prentice Hall.  </li>
 <li>J. G. Proakis, D. G. Manolakis, <em>Digital Signal Processing: Principles, Algorithms, and Applications</em>.  </li>

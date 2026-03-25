@@ -314,7 +314,7 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Câu 55.** **Trong Python dùng hàm nào cho Parks-McClellan?**  
 **Đáp:** `remez()`.  
 **Vì sao:** Triển khai chuẩn thuật toán equiripple.  
-**Liên kết:** `modules/fir_filters.py`.
+**Liên kết:** `modules/Thietke_Fir.py`.
 
 **Câu 56.** **`weight` trong `remez` có tác dụng gì?**  
 **Đáp:** Ưu tiên sai số giữa passband và stopband.  

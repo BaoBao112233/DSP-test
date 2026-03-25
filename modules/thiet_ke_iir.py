@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.signal import cheby1, freqz, group_delay
 
-from .plot_config import COLORS, build_save_path, finalize_figure
+from .cau_hinh_do_thi import COLORS, build_save_path, finalize_figure
 
 
 def afd_chb1_bilinear(wp_rad: float, ws_rad: float, rp_db: float, rs_db: float, fs: float):

@@ -18,9 +18,9 @@ Dự án mô phỏng toàn bộ quy trình **thiết kế và phân tích bộ l
   - [modules/sampling\_demo.py](#modulessampling_demopy)
   - [modules/design\_analysis.py](#modulesdesign_analysispy)
   - [modules/signal\_ops.py](#modulessignal_opspy)
-  - [modules/z\_analysis.py](#modulesz_analysispy)
-  - [modules/fir\_filters.py](#modulesfir_filterspy)
-  - [modules/iir\_filters.py](#modulesiir_filterspy)
+  - [modules/z\_analysis.py](#modulesPT_TinHieuGocpy)
+  - [modules/fir\_filters.py](#modulesThietke_Firpy)
+  - [modules/iir\_filters.py](#modulesThietke_IIRpy)
   - [modules/comparison.py](#modulescomparisonpy)
   - [modules/applications.py](#modulesapplicationspy)
   - [modules/plot\_config.py](#modulesplot_configpy)
@@ -54,7 +54,6 @@ cd DSP-test
 
 ```bash
 # Tạo virtual environment
-python -m venv .venv
 
 # Kích hoạt (Linux / macOS)
 source .venv/bin/activate
@@ -99,9 +98,9 @@ DSP-test/
 │   ├── sampling_demo.py     # Chương 1b: Lấy mẫu & định lý Nyquist
 │   ├── design_analysis.py   # Phân tích tín hiệu đầu vào & lựa chọn bộ lọc
 │   ├── signal_ops.py        # Chương 1: Thao tác tín hiệu rời rạc
-│   ├── z_analysis.py        # Chương 2: Biến đổi Z, phân tích H(z)
-│   ├── fir_filters.py       # Chương 3: Thiết kế bộ lọc FIR
-│   ├── iir_filters.py       # Chương 4: Thiết kế bộ lọc IIR
+│   ├── PT_TinHieuGoc.py        # Chương 2: Biến đổi Z, phân tích H(z)
+│   ├── Thietke_Fir.py       # Chương 3: Thiết kế bộ lọc FIR
+│   ├── Thietke_IIR.py       # Chương 4: Thiết kế bộ lọc IIR
 │   ├── comparison.py        # Chương 7: So sánh FIR vs IIR
 │   ├── applications.py      # Bổ sung: Notch 50Hz & Echo
 │   └── plot_config.py       # Cấu hình giao diện biểu đồ (Catppuccin dark)
@@ -220,7 +219,7 @@ Triển khai các phép toán nền tảng của DSP:
 
 ---
 
-### `modules/z_analysis.py`
+### `modules/PT_TinHieuGoc.py`
 
 **Chương 2 – Biến đổi Z và phân tích hàm truyền H(z).**
 
@@ -235,7 +234,7 @@ Triển khai các phép toán nền tảng của DSP:
 
 ---
 
-### `modules/fir_filters.py`
+### `modules/Thietke_Fir.py`
 
 **Chương 3 – Thiết kế bộ lọc FIR.**
 
@@ -252,7 +251,7 @@ Biểu đồ xuất ra gồm: đáp ứng biên độ (dB), đáp ứng pha, và
 
 ---
 
-### `modules/iir_filters.py`
+### `modules/Thietke_IIR.py`
 
 **Chương 4 – Thiết kế bộ lọc IIR Chebyshev Type I.**
 

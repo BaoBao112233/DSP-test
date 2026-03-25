@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.signal import freqz
 
-from .plot_config import COLORS, build_save_path, finalize_figure
-from .signal_ops import energy
+from .cau_hinh_do_thi import COLORS, build_save_path, finalize_figure
+from .thaotac_tin_hieu import energy
 
 
 def design_notch_50hz(fs: float = 44100.0, q: float = 30.0):

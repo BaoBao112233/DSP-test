@@ -178,4 +178,4 @@ Ba yêu cầu chính có thể kết luận như sau:
 2. **Lý do chọn bộ lọc** phụ thuộc mục tiêu: bảo toàn pha thì chọn FIR, tiết kiệm tính toán thì chọn IIR, khử nhiễu đơn tần thì chọn Notch.
 3. **Tính toán tham số bộ lọc** được thực hiện nhất quán từ thông số chuẩn hóa, đổi sang Hz, rồi đổi tiếp sang miền analog khi cần cho bilinear transform.
 
-Tài liệu này liên kết trực tiếp với code trong [modules/fir_filters.py](modules/fir_filters.py), [modules/iir_filters.py](modules/iir_filters.py) và [modules/applications.py](modules/applications.py).
+Tài liệu này liên kết trực tiếp với code trong [modules/Thietke_Fir.py](modules/Thietke_Fir.py), [modules/Thietke_IIR.py](modules/Thietke_IIR.py) và [modules/applications.py](modules/applications.py).

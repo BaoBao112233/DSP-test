@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from scipy.signal import firwin, freqz, remez
 
-from .plot_config import COLORS, build_save_path, finalize_figure
+from .cau_hinh_do_thi import COLORS, build_save_path, finalize_figure
 
 
 def design_fir_hamming(wp_rad: float, ws_rad: float) -> np.ndarray:

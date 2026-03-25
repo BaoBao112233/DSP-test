@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import warnings
 
-from .applications import demo_echo, demo_notch
-from .comparison import compare_fir_iir
-from .design_analysis import run_design_analysis
-from .fir_filters import demo_fir
-from .iir_filters import demo_iir
-from .plot_config import apply_plot_style
-from .sampling_demo import demo_sampling
-from .signal_ops import demo_signal_ops
-from .z_analysis import demo_z_transform
+from .ung_dung import demo_echo, demo_notch
+from .so_sanh import compare_fir_iir
+from .phan_tich_thiet_ke import run_design_analysis
+from .thiet_ke_fir import demo_fir
+from .thiet_ke_iir import demo_iir
+from .cau_hinh_do_thi import apply_plot_style
+from .demo_lay_mau import demo_sampling
+from .thaotac_tin_hieu import demo_signal_ops
+from .bien_doi_z import demo_z_transform
 
 warnings.filterwarnings("ignore")
 

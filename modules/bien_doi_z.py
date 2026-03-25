@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import residuez
 
-from .plot_config import COLORS, build_save_path, finalize_figure
+from .cau_hinh_do_thi import COLORS, build_save_path, finalize_figure
 
 
 def zplane(

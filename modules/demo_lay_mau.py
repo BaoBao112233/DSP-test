@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .plot_config import COLORS, build_save_path, finalize_figure
+from .cau_hinh_do_thi import COLORS, build_save_path, finalize_figure
 
 
 def generate_original_signal(time_axis: np.ndarray) -> np.ndarray:

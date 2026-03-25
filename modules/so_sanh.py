@@ -4,10 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import freqz, group_delay
 
-from .cau_hinh_do_thi import COLORS, build_save_path, finalize_figure
+from .cau_hinh_do_thi import COLORS, tao_duong_dan_luu, hoan_thien_bieu_do
 
 
-def compare_fir_iir(
+def so_sanh_fir_iir(
     h_fir: np.ndarray,
     b_iir: np.ndarray,
     a_iir: np.ndarray,
@@ -50,9 +50,9 @@ def compare_fir_iir(
     axes[1].legend(facecolor="#2a2a3e")
     axes[1].grid(True)
 
-    finalize_figure(
+    hoan_thien_bieu_do(
         fig,
         show_plots,
-        save_path=build_save_path(save_dir, "07_fir_vs_iir_compare.png"),
+        save_path=tao_duong_dan_luu(save_dir, "07_fir_vs_iir_compare.png"),
     )
     return {"gd_fir_max": float(gd_fir.max()), "gd_iir_max": float(gd_iir.max())}

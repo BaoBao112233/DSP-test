@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import argparse
 
-from modules import run_all
+from modules import chay_toan_bo
 
 
-def parse_args() -> argparse.Namespace:
+def phan_tich_tham_so() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Mô phỏng xử lý tín hiệu âm thanh theo tài liệu MATLAB bằng Python.",
     )
@@ -26,8 +26,8 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
-    args = parse_args()
-    run_all(show_plots=not args.no_plots, save_dir=args.save_plots_dir)
+    args = phan_tich_tham_so()
+    chay_toan_bo(show_plots=not args.no_plots, save_dir=args.save_plots_dir)
 
 
 if __name__ == "__main__":

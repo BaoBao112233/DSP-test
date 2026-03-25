@@ -4,10 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import residuez
 
-from .cau_hinh_do_thi import COLORS, build_save_path, finalize_figure
+from .cau_hinh_do_thi import COLORS, tao_duong_dan_luu, hoan_thien_bieu_do
 
 
-def zplane(
+def ve_mat_phang_z(
     b: np.ndarray,
     a: np.ndarray,
     title: str = "Z-Plane",
@@ -33,14 +33,14 @@ def zplane(
     ax.set_ylabel("Im(z)")
     ax.legend(facecolor="#2a2a3e")
     ax.grid(True)
-    finalize_figure(fig, show_plots, save_path=save_path)
+    hoan_thien_bieu_do(fig, show_plots, save_path=save_path)
 
     stable = np.all(np.abs(poles_z) < 1.0)
     print(f"  Ổn định ({title}): {'✔ CÓ (tất cả cực nằm trong vòng tròn đơn vị)' if stable else '✘ KHÔNG'}")
     return zeros_z, poles_z
 
 
-def demo_z_transform(show_plots: bool = True, save_dir: str | None = None):
+def demo_phan_tich_z(show_plots: bool = True, save_dir: str | None = None):
     print("\n" + "=" * 60)
     print("CHƯƠNG 2: BIẾN ĐỔI Z – PHÂN TÍCH H(z)")
     print("=" * 60)
@@ -55,11 +55,11 @@ def demo_z_transform(show_plots: bool = True, save_dir: str | None = None):
     print(f"  Cực       P = {poles}")
     print(f"  Hằng số   C = {constant}")
 
-    zplane(
+    ve_mat_phang_z(
         b,
         a,
         title="Z-Plane – H(z) = (1+z⁻¹)/(1−0.5z⁻¹+0.25z⁻²)",
         show_plots=show_plots,
-        save_path=build_save_path(save_dir, "04_zplane_hz.png"),
+        save_path=tao_duong_dan_luu(save_dir, "04_zplane_hz.png"),
     )
     return {"b": b, "a": a, "residues": residues, "poles": poles, "constant": constant}

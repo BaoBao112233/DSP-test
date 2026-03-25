@@ -4,7 +4,7 @@ import numpy as np
 from scipy import signal
 
 
-def analyze_input_signals(fs: float = 44100.0):
+def phan_tich_dau_vao(fs: float = 44100.0):
     wp = 0.2 * np.pi
     ws = 0.3 * np.pi
     fp = wp * fs / (2 * np.pi)
@@ -36,9 +36,9 @@ def analyze_input_signals(fs: float = 44100.0):
     }
 
 
-def explain_filter_choices(fs: float = 44100.0, specs: dict | None = None):
+def giai_thich_lua_chon(fs: float = 44100.0, specs: dict | None = None):
     if specs is None:
-        specs = analyze_input_signals(fs)
+        specs = phan_tich_dau_vao(fs)
     wp = specs["wp"]
     ws = specs["ws"]
     delta_w = ws - wp
@@ -92,7 +92,7 @@ def explain_filter_choices(fs: float = 44100.0, specs: dict | None = None):
     }
 
 
-def calculate_filter_parameters(fs: float = 44100.0):
+def tinh_tham_so(fs: float = 44100.0):
     wp = 0.2 * np.pi
     ws = 0.3 * np.pi
     t = 1.0 / fs
@@ -122,10 +122,10 @@ def calculate_filter_parameters(fs: float = 44100.0):
     }
 
 
-def run_design_analysis(fs: float = 44100.0):
-    input_result = analyze_input_signals(fs)
-    choice_result = explain_filter_choices(fs, specs=input_result)
-    parameter_result = calculate_filter_parameters(fs)
+def chay_phan_tich_thiet_ke(fs: float = 44100.0):
+    input_result = phan_tich_dau_vao(fs)
+    choice_result = giai_thich_lua_chon(fs, specs=input_result)
+    parameter_result = tinh_tham_so(fs)
     return {
         "input": input_result,
         "choice": choice_result,

@@ -3,10 +3,10 @@ from __future__ import annotations
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .cau_hinh_do_thi import COLORS, build_save_path, finalize_figure
+from .cau_hinh_do_thi import COLORS, tao_duong_dan_luu, hoan_thien_bieu_do
 
 
-def generate_original_signal(time_axis: np.ndarray) -> np.ndarray:
+def tao_tin_hieu_goc(time_axis: np.ndarray) -> np.ndarray:
     """Tạo tín hiệu gốc liên tục giả lập gồm nhiều thành phần sin."""
     return (
         0.8 * np.sin(2 * np.pi * 440 * time_axis)
@@ -15,7 +15,7 @@ def generate_original_signal(time_axis: np.ndarray) -> np.ndarray:
     )
 
 
-def sample_signal(fs: float = 44100.0, duration: float = 0.01):
+def lay_mau_tin_hieu(fs: float = 44100.0, duration: float = 0.01):
     """Lấy mẫu đều tín hiệu theo công thức x[n] = x(nTs)."""
     ts = 1.0 / fs
     continuous_fs = fs * 40
@@ -23,8 +23,8 @@ def sample_signal(fs: float = 44100.0, duration: float = 0.01):
     t_cont = np.linspace(0, duration, int(duration * continuous_fs), endpoint=False)
     t_disc = np.arange(0, duration, ts)
 
-    x_cont = generate_original_signal(t_cont)
-    x_disc = generate_original_signal(t_disc)
+    x_cont = tao_tin_hieu_goc(t_cont)
+    x_disc = tao_tin_hieu_goc(t_disc)
 
     return {
         "fs": fs,
@@ -39,7 +39,7 @@ def sample_signal(fs: float = 44100.0, duration: float = 0.01):
     }
 
 
-def analyze_nyquist(fs: float, f_max: float) -> dict:
+def kiem_tra_nyquist(fs: float, f_max: float) -> dict:
     nyquist = fs / 2
     satisfied = fs >= 2 * f_max
     return {
@@ -51,24 +51,24 @@ def analyze_nyquist(fs: float, f_max: float) -> dict:
     }
 
 
-def compute_spectrum(x: np.ndarray, fs: float) -> tuple[np.ndarray, np.ndarray]:
+def tinh_pho(x: np.ndarray, fs: float) -> tuple[np.ndarray, np.ndarray]:
     spectrum = np.abs(np.fft.rfft(x))
     freq_axis = np.fft.rfftfreq(len(x), d=1.0 / fs)
     return freq_axis, spectrum
 
 
-def alias_frequency(f_signal: float, fs: float) -> float:
+def tan_so_alias(f_signal: float, fs: float) -> float:
     """Tính tần số alias rơi về dải [0, Fs/2]."""
     return abs(((f_signal + fs / 2) % fs) - fs / 2)
 
 
-def demo_sampling(show_plots: bool = True, fs: float = 44100.0, duration: float = 0.01, save_dir: str | None = None):
-    sampled = sample_signal(fs=fs, duration=duration)
-    nyquist_info = analyze_nyquist(sampled["fs"], sampled["f_max"])
+def demo_qua_trinh_lay_mau(show_plots: bool = True, fs: float = 44100.0, duration: float = 0.01, save_dir: str | None = None):
+    sampled = lay_mau_tin_hieu(fs=fs, duration=duration)
+    nyquist_info = kiem_tra_nyquist(sampled["fs"], sampled["f_max"])
     undersampled_fs = 4000.0
-    undersampled = sample_signal(fs=undersampled_fs, duration=duration)
-    undersampled_nyquist = analyze_nyquist(undersampled_fs, sampled["f_max"])
-    aliased_3000 = alias_frequency(3000.0, undersampled_fs)
+    undersampled = lay_mau_tin_hieu(fs=undersampled_fs, duration=duration)
+    undersampled_nyquist = kiem_tra_nyquist(undersampled_fs, sampled["f_max"])
+    aliased_3000 = tan_so_alias(3000.0, undersampled_fs)
 
     print("\n" + "=" * 60)
     print("MÔ PHỎNG TÍN HIỆU GỐC VÀ QUÁ TRÌNH RỜI RẠC HÓA")
@@ -104,14 +104,14 @@ def demo_sampling(show_plots: bool = True, fs: float = 44100.0, duration: float 
     axes[1].legend(["Tín hiệu gốc", "Mẫu rời rạc"], facecolor="#2a2a3e")
     axes[1].grid(True)
 
-    finalize_figure(
+    hoan_thien_bieu_do(
         fig,
         show_plots,
-        save_path=build_save_path(save_dir, "01_sampling_time_domain.png"),
+        save_path=tao_duong_dan_luu(save_dir, "01_sampling_time_domain.png"),
     )
 
-    freq_good, spec_good = compute_spectrum(sampled["x_disc"], sampled["fs"])
-    freq_bad, spec_bad = compute_spectrum(undersampled["x_disc"], undersampled_fs)
+    freq_good, spec_good = tinh_pho(sampled["x_disc"], sampled["fs"])
+    freq_bad, spec_bad = tinh_pho(undersampled["x_disc"], undersampled_fs)
 
     fig_fft, axes_fft = plt.subplots(2, 1, figsize=(12, 8), tight_layout=True)
     fig_fft.suptitle("So sánh phổ FFT: lấy mẫu đúng và sai Nyquist", fontsize=13, color=COLORS[4])
@@ -135,10 +135,10 @@ def demo_sampling(show_plots: bool = True, fs: float = 44100.0, duration: float 
     axes_fft[1].legend(facecolor="#2a2a3e")
     axes_fft[1].grid(True)
 
-    finalize_figure(
+    hoan_thien_bieu_do(
         fig_fft,
         show_plots,
-        save_path=build_save_path(save_dir, "02_sampling_fft_aliasing.png"),
+        save_path=tao_duong_dan_luu(save_dir, "02_sampling_fft_aliasing.png"),
     )
     return {
         "sampled": sampled,

@@ -96,8 +96,8 @@ pip install -r requirements.txt
 
 | Hàm | Chữ ký | Mô tả |
 |-----|--------|-------|
-| `parse_args` | `() → Namespace` | Phân tích tham số dòng lệnh: `--no-plots` và `--save-plots-dir` |
-| `main` | `() → None` | Hàm main: gọi `parse_args()` rồi chuyển tham số vào `run_all()` |
+| `phan_tich_tham_so` | `() → Namespace` | Phân tích tham số dòng lệnh: `--no-plots` và `--save-plots-dir` |
+| `main` | `() → None` | Hàm main: gọi `phan_tich_tham_so()` rồi chuyển tham số vào `chay_toan_bo()` |
 
 ---
 
@@ -107,7 +107,7 @@ pip install -r requirements.txt
 
 | Export | Nguồn | Mô tả |
 |--------|-------|-------|
-| `run_all` | `chay_demo` | Hàm duy nhất được xuất ra ngoài để chạy toàn bộ |
+| `chay_toan_bo` | `chay_demo` | Hàm duy nhất được xuất ra ngoài để chạy toàn bộ |
 
 ---
 
@@ -118,9 +118,9 @@ pip install -r requirements.txt
 | Hàm / Hằng | Chữ ký | Mô tả |
 |------------|--------|-------|
 | `COLORS` | `list[str]` | Bảng 6 màu hex theo theme Catppuccin Mocha (xanh, xanh lá, đỏ, cam, tím, cyan) |
-| `apply_plot_style` | `() → None` | Áp dụng theme tối lên toàn bộ biểu đồ Matplotlib thông qua `rcParams` |
-| `build_save_path` | `(save_dir, filename) → str \| None` | Tạo đường dẫn lưu file ảnh; tự tạo thư mục nếu chưa tồn tại; trả về `None` nếu `save_dir` là `None` |
-| `finalize_figure` | `(fig, show_plots, save_path) → None` | Lưu biểu đồ ra file nếu có `save_path`, hiển thị hoặc đóng tùy `show_plots` |
+| `ap_dung_style_do_thi` | `() → None` | Áp dụng theme tối lên toàn bộ biểu đồ Matplotlib thông qua `rcParams` |
+| `tao_duong_dan_luu` | `(save_dir, filename) → str \| None` | Tạo đường dẫn lưu file ảnh; tự tạo thư mục nếu chưa tồn tại; trả về `None` nếu `save_dir` là `None` |
+| `hoan_thien_bieu_do` | `(fig, show_plots, save_path) → None` | Lưu biểu đồ ra file nếu có `save_path`, hiển thị hoặc đóng tùy `show_plots` |
 
 ---
 
@@ -130,11 +130,11 @@ pip install -r requirements.txt
 
 | Hàm | Chữ ký | Mô tả |
 |-----|--------|-------|
-| `sigshift` | `(x, n, d) → (x, n+d)` | Dịch dãy tín hiệu `x[n]` sang phải `d` mẫu; trả về bản sao `x` và trục thời gian mới |
-| `sigfold` | `(x, n) → (x[-1::-1], -n[-1::-1])` | Gấp (đảo chiều) dãy tín hiệu theo trục $n = 0$; tương đương $x(-n)$ |
-| `sigadd` | `(x1, n1, x2, n2) → (y, n_out)` | Cộng hai dãy tín hiệu có thể có miền thời gian khác nhau; tự động căn chỉnh và zero-pad |
-| `energy` | `(x) → float` | Tính năng lượng $E = \sum |x[n]|^2$ |
-| `demo_signal_ops` | `(show_plots, save_dir) → dict` | Demo tổng hợp: tạo tín hiệu mẫu, thực hiện dịch/gấp/cộng, in kết quả và vẽ 3 biểu đồ stem; lưu `03_signal_ops_discrete.png` |
+| `dich_tin_hieu` | `(x, n, d) → (x, n+d)` | Dịch dãy tín hiệu `x[n]` sang phải `d` mẫu; trả về bản sao `x` và trục thời gian mới |
+| `gap_tin_hieu` | `(x, n) → (x[-1::-1], -n[-1::-1])` | Gấp (đảo chiều) dãy tín hiệu theo trục $n = 0$; tương đương $x(-n)$ |
+| `cong_hai_tin_hieu` | `(x1, n1, x2, n2) → (y, n_out)` | Cộng hai dãy tín hiệu có thể có miền thời gian khác nhau; tự động căn chỉnh và zero-pad |
+| `nang_luong` | `(x) → float` | Tính năng lượng $E = \sum |x[n]|^2$ |
+| `demo_thaotac_tin_hieu` | `(show_plots, save_dir) → dict` | Demo tổng hợp: tạo tín hiệu mẫu, thực hiện dịch/gấp/cộng, in kết quả và vẽ 3 biểu đồ stem; lưu `03_signal_ops_discrete.png` |
 
 ---
 
@@ -144,12 +144,12 @@ pip install -r requirements.txt
 
 | Hàm | Chữ ký | Mô tả |
 |-----|--------|-------|
-| `generate_original_signal` | `(time_axis) → ndarray` | Tạo tín hiệu gốc liên tục giả lập gồm 3 thành phần sin: 440 Hz, 1000 Hz, 3000 Hz với biên độ khác nhau |
-| `sample_signal` | `(fs, duration) → dict` | Lấy mẫu đều tín hiệu theo $x[n] = x(nT_s)$; trả về dict chứa trục thời gian liên tục và rời rạc, tín hiệu, và các tham số mô phỏng |
-| `analyze_nyquist` | `(fs, f_max) → dict` | Kiểm tra điều kiện Nyquist-Shannon $F_s \geq 2f_{max}$; trả về kết quả `satisfied` cùng tần số Nyquist |
-| `compute_spectrum` | `(x, fs) → (freq_axis, spectrum)` | Tính phổ biên độ qua FFT nhanh (rfft); trả về trục tần số và giá trị $|X(f)|$ |
-| `alias_frequency` | `(f_signal, fs) → float` | Tính tần số alias khi lấy mẫu sai: ánh xạ tần số thực về miền $[0, F_s/2]$ |
-| `demo_sampling` | `(show_plots, fs, duration, save_dir) → dict` | Demo tổng hợp: so sánh lấy mẫu đúng (44.1 kHz) và sai Nyquist (4 kHz); vẽ miền thời gian (`01_sampling_time_domain.png`) và miền tần số (`02_sampling_fft_aliasing.png`) |
+| `tao_tin_hieu_goc` | `(time_axis) → ndarray` | Tạo tín hiệu gốc liên tục giả lập gồm 3 thành phần sin: 440 Hz, 1000 Hz, 3000 Hz với biên độ khác nhau |
+| `lay_mau_tin_hieu` | `(fs, duration) → dict` | Lấy mẫu đều tín hiệu theo $x[n] = x(nT_s)$; trả về dict chứa trục thời gian liên tục và rời rạc, tín hiệu, và các tham số mô phỏng |
+| `kiem_tra_nyquist` | `(fs, f_max) → dict` | Kiểm tra điều kiện Nyquist-Shannon $F_s \geq 2f_{max}$; trả về kết quả `satisfied` cùng tần số Nyquist |
+| `tinh_pho` | `(x, fs) → (freq_axis, spectrum)` | Tính phổ biên độ qua FFT nhanh (rfft); trả về trục tần số và giá trị $|X(f)|$ |
+| `tan_so_alias` | `(f_signal, fs) → float` | Tính tần số alias khi lấy mẫu sai: ánh xạ tần số thực về miền $[0, F_s/2]$ |
+| `demo_qua_trinh_lay_mau` | `(show_plots, fs, duration, save_dir) → dict` | Demo tổng hợp: so sánh lấy mẫu đúng (44.1 kHz) và sai Nyquist (4 kHz); vẽ miền thời gian (`01_sampling_time_domain.png`) và miền tần số (`02_sampling_fft_aliasing.png`) |
 
 ---
 
@@ -159,8 +159,8 @@ pip install -r requirements.txt
 
 | Hàm | Chữ ký | Mô tả |
 |-----|--------|-------|
-| `zplane` | `(b, a, title, show_plots, save_path) → (zeros, poles)` | Vẽ sơ đồ mặt phẳng Z: vẽ vòng tròn đơn vị, đánh dấu zero (○) và pole (×); in kết luận ổn định; trả về mảng zeros và poles |
-| `demo_z_transform` | `(show_plots, save_dir) → dict` | Demo biến đổi Z cho $H(z) = (1+z^{-1})/(1-0.5z^{-1}+0.25z^{-2})$: tính phân rã thặng dư qua `residuez`, vẽ mặt phẳng Z (`04_zplane_hz.png`), in thặng dư R, cực P, hằng số C |
+| `ve_mat_phang_z` | `(b, a, title, show_plots, save_path) → (zeros, poles)` | Vẽ sơ đồ mặt phẳng Z: vẽ vòng tròn đơn vị, đánh dấu zero (○) và pole (×); in kết luận ổn định; trả về mảng zeros và poles |
+| `demo_phan_tich_z` | `(show_plots, save_dir) → dict` | Demo biến đổi Z cho $H(z) = (1+z^{-1})/(1-0.5z^{-1}+0.25z^{-2})$: tính phân rã thặng dư qua `residuez`, vẽ mặt phẳng Z (`04_zplane_hz.png`), in thặng dư R, cực P, hằng số C |
 
 ---
 
@@ -170,10 +170,10 @@ pip install -r requirements.txt
 
 | Hàm | Chữ ký | Mô tả |
 |-----|--------|-------|
-| `analyze_input_signals` | `(fs) → dict` | Chuyển đổi tần số chuẩn hóa ($\omega_p = 0.2\pi$, $\omega_s = 0.3\pi$) sang Hz thực; tính bề rộng dải chuyển tiếp; in phân tích tín hiệu đầu vào cho bài toán low-pass và notch |
-| `explain_filter_choices` | `(fs, specs) → dict` | Tra công thức tính bậc lọc cho cả 3 loại (Hamming, Parks-McClellan, Chebyshev); in giải thích lý do kỹ thuật khi chọn từng loại bộ lọc |
-| `calculate_filter_parameters` | `(fs) → dict` | Tính tham số pre-warp bilinear $\Omega_P$, $\Omega_S$; in bảng tóm tắt tần số Nyquist và miền chuẩn hóa |
-| `run_design_analysis` | `(fs) → dict` | Hàm tổng hợp: gọi tuần tự `analyze_input_signals` → `explain_filter_choices` → `calculate_filter_parameters`; trả về dict gộp kết quả cả 3 hàm |
+| `phan_tich_dau_vao` | `(fs) → dict` | Chuyển đổi tần số chuẩn hóa ($\omega_p = 0.2\pi$, $\omega_s = 0.3\pi$) sang Hz thực; tính bề rộng dải chuyển tiếp; in phân tích tín hiệu đầu vào cho bài toán low-pass và notch |
+| `giai_thich_lua_chon` | `(fs, specs) → dict` | Tra công thức tính bậc lọc cho cả 3 loại (Hamming, Parks-McClellan, Chebyshev); in giải thích lý do kỹ thuật khi chọn từng loại bộ lọc |
+| `tinh_tham_so` | `(fs) → dict` | Tính tham số pre-warp bilinear $\Omega_P$, $\Omega_S$; in bảng tóm tắt tần số Nyquist và miền chuẩn hóa |
+| `chay_phan_tich_thiet_ke` | `(fs) → dict` | Hàm tổng hợp: gọi tuần tự `phan_tich_dau_vao` → `giai_thich_lua_chon` → `tinh_tham_so`; trả về dict gộp kết quả cả 3 hàm |
 
 ---
 
@@ -183,10 +183,10 @@ pip install -r requirements.txt
 
 | Hàm | Chữ ký | Mô tả |
 |-----|--------|-------|
-| `design_fir_hamming` | `(wp_rad, ws_rad) → ndarray` | Thiết kế FIR bằng cửa sổ Hamming: tính bậc $M = \lceil 6.6\pi/\Delta\omega \rceil$, đặt tần số cắt tại trung điểm dải chuyển tiếp; in bậc và số hệ số |
-| `design_fir_pm` | `(wp_rad, ws_rad, delta1_db, delta2_db) → ndarray` | Thiết kế FIR Parks-McClellan (Remez): ước tính bậc theo công thức delta, gọi `remez()` với trọng số ripple; in bậc và số hệ số |
-| `plot_fir_response` | `(h_hamming, h_pm, fs, show_plots, save_path) → None` | Vẽ lưới 2×2: biên độ (dB) và pha (độ) cho cả Hamming và Parks-McClellan; lưu `05_fir_hamming_vs_pm.png` |
-| `demo_fir` | `(fs, show_plots, save_dir) → dict` | Demo tổng hợp **Chương 3**: thiết kế cả hai bộ lọc FIR, in tham số, gọi `plot_fir_response`; trả về `{h_hamming, h_pm, wp, ws, fs}` |
+| `thiet_ke_fir_hamming` | `(wp_rad, ws_rad) → ndarray` | Thiết kế FIR bằng cửa sổ Hamming: tính bậc $M = \lceil 6.6\pi/\Delta\omega \rceil$, đặt tần số cắt tại trung điểm dải chuyển tiếp; in bậc và số hệ số |
+| `thiet_ke_fir_pm` | `(wp_rad, ws_rad, delta1_db, delta2_db) → ndarray` | Thiết kế FIR Parks-McClellan (Remez): ước tính bậc theo công thức delta, gọi `remez()` với trọng số ripple; in bậc và số hệ số |
+| `ve_dap_ung_fir` | `(h_hamming, h_pm, fs, show_plots, save_path) → None` | Vẽ lưới 2×2: biên độ (dB) và pha (độ) cho cả Hamming và Parks-McClellan; lưu `05_fir_hamming_vs_pm.png` |
+| `demo_bo_loc_fir` | `(fs, show_plots, save_dir) → dict` | Demo tổng hợp **Chương 3**: thiết kế cả hai bộ lọc FIR, in tham số, gọi `ve_dap_ung_fir`; trả về `{h_hamming, h_pm, wp, ws, fs}` |
 
 ---
 
@@ -196,9 +196,9 @@ pip install -r requirements.txt
 
 | Hàm | Chữ ký | Mô tả |
 |-----|--------|-------|
-| `afd_chb1_bilinear` | `(wp_rad, ws_rad, rp_db, rs_db, fs) → (b, a, order, Ωp, Ωs)` | Thiết kế IIR Chebyshev Type I: thực hiện pre-warp bilinear ($\Omega = \frac{2}{T}\tan(\omega/2)$), xác định bậc tối thiểu qua `cheb1ord`, tổng hợp bộ lọc số qua `cheby1`; in các tham số trung gian |
-| `plot_iir_response` | `(b, a, fs, title, show_plots, save_path) → bool` | Vẽ lưới 2×2: biên độ (−3 dB marker), pha mở (unwrapped), group delay, và mặt phẳng Z; kiểm tra ổn định (tất cả cực nằm trong vòng tròn đơn vị); trả về `True/False` ổn định; lưu `06_iir_response.png` |
-| `demo_iir` | `(fs, show_plots, save_dir) → dict` | Demo tổng hợp **Chương 4 & 5**: gọi `afd_chb1_bilinear` rồi `plot_iir_response`; trả về `{b, a, order, omega_p, omega_s, stable, wp, ws, fs}` |
+| `thiet_ke_iir_bilinear` | `(wp_rad, ws_rad, rp_db, rs_db, fs) → (b, a, order, Ωp, Ωs)` | Thiết kế IIR Chebyshev Type I: thực hiện pre-warp bilinear ($\Omega = \frac{2}{T}\tan(\omega/2)$), xác định bậc tối thiểu qua `cheb1ord`, tổng hợp bộ lọc số qua `cheby1`; in các tham số trung gian |
+| `ve_dap_ung_iir` | `(b, a, fs, title, show_plots, save_path) → bool` | Vẽ lưới 2×2: biên độ (−3 dB marker), pha mở (unwrapped), group delay, và mặt phẳng Z; kiểm tra ổn định (tất cả cực nằm trong vòng tròn đơn vị); trả về `True/False` ổn định; lưu `06_iir_response.png` |
+| `demo_bo_loc_iir` | `(fs, show_plots, save_dir) → dict` | Demo tổng hợp **Chương 4 & 5**: gọi `thiet_ke_iir_bilinear` rồi `ve_dap_ung_iir`; trả về `{b, a, order, omega_p, omega_s, stable, wp, ws, fs}` |
 
 ---
 
@@ -208,7 +208,7 @@ pip install -r requirements.txt
 
 | Hàm | Chữ ký | Mô tả |
 |-----|--------|-------|
-| `compare_fir_iir` | `(h_fir, b_iir, a_iir, fs, show_plots, save_dir) → dict` | Tính `freqz` và `group_delay` cho cả hai bộ lọc; vẽ 2 biểu đồ cạnh nhau: đáp ứng biên độ (dB) và group delay (mẫu); tự động scale trục Y group delay để tránh nhiễu spike IIR; lưu `07_fir_vs_iir_compare.png`; trả về `{gd_fir_max, gd_iir_max}` |
+| `so_sanh_fir_iir` | `(h_fir, b_iir, a_iir, fs, show_plots, save_dir) → dict` | Tính `freqz` và `group_delay` cho cả hai bộ lọc; vẽ 2 biểu đồ cạnh nhau: đáp ứng biên độ (dB) và group delay (mẫu); tự động scale trục Y group delay để tránh nhiễu spike IIR; lưu `07_fir_vs_iir_compare.png`; trả về `{gd_fir_max, gd_iir_max}` |
 
 ---
 
@@ -218,10 +218,10 @@ pip install -r requirements.txt
 
 | Hàm | Chữ ký | Mô tả |
 |-----|--------|-------|
-| `design_notch_50hz` | `(fs, q) → (b, a)` | Thiết kế bộ lọc Notch tại 50 Hz bằng `iirnotch` với hệ số Q xác định độ hẹp dải chắn |
-| `demo_notch` | `(fs, show_plots, save_dir) → dict` | Demo **Bổ sung – Notch 50 Hz**: tổng hợp tín hiệu nhiễu (440 Hz + 50 Hz + Gaussian), lọc qua Notch, tính SNR trước/sau, vẽ 4 biểu đồ (tín hiệu, phổ, đáp ứng bộ lọc); lưu `08_notch_50hz.png`; trả về `{b, a, snr_before, snr_after}` |
-| `simulate_echo` | `(x, fs, delay_ms, decay) → ndarray` | Mô phỏng echo: $y[n] = x[n] + \alpha \cdot x[n - D]$ với $D$ = số mẫu delay; tương ứng thí nghiệm Lab-Volt TMS320C50 ex1\_1 |
-| `demo_echo` | `(fs, show_plots, save_dir) → dict` | Demo **Bổ sung – Echo**: tạo tín hiệu xung ngắn, áp dụng echo với delay 100 ms và 400 ms, vẽ 3 biểu đồ; lưu `09_echo_demo.png`; trả về `{x, time}` |
+| `thiet_ke_notch_50hz` | `(fs, q) → (b, a)` | Thiết kế bộ lọc Notch tại 50 Hz bằng `iirnotch` với hệ số Q xác định độ hẹp dải chắn |
+| `demo_bo_loc_notch` | `(fs, show_plots, save_dir) → dict` | Demo **Bổ sung – Notch 50 Hz**: tổng hợp tín hiệu nhiễu (440 Hz + 50 Hz + Gaussian), lọc qua Notch, tính SNR trước/sau, vẽ 4 biểu đồ (tín hiệu, phổ, đáp ứng bộ lọc); lưu `08_notch_50hz.png`; trả về `{b, a, snr_before, snr_after}` |
+| `mo_phong_echo` | `(x, fs, delay_ms, decay) → ndarray` | Mô phỏng echo: $y[n] = x[n] + \alpha \cdot x[n - D]$ với $D$ = số mẫu delay; tương ứng thí nghiệm Lab-Volt TMS320C50 ex1\_1 |
+| `demo_hieu_ung_echo` | `(fs, show_plots, save_dir) → dict` | Demo **Bổ sung – Echo**: tạo tín hiệu xung ngắn, áp dụng echo với delay 100 ms và 400 ms, vẽ 3 biểu đồ; lưu `09_echo_demo.png`; trả về `{x, time}` |
 
 ---
 
@@ -231,7 +231,7 @@ pip install -r requirements.txt
 
 | Hàm | Chữ ký | Mô tả |
 |-----|--------|-------|
-| `run_all` | `(show_plots, save_dir) → dict` | Hàm điều phối chính: áp dụng theme biểu đồ, rồi gọi tuần tự 9 demo theo thứ tự (Chương 1→9); kết quả IIR được chuyển sang `compare_fir_iir`; trả về dict tổng hợp với keys: `sampling`, `analysis`, `signal_ops`, `z`, `fir`, `iir`, `comparison`, `notch`, `echo`, `save_dir` |
+| `chay_toan_bo` | `(show_plots, save_dir) → dict` | Hàm điều phối chính: áp dụng theme biểu đồ, rồi gọi tuần tự 9 demo theo thứ tự (Chương 1→9); kết quả IIR được chuyển sang `so_sanh_fir_iir`; trả về dict tổng hợp với keys: `sampling`, `analysis`, `signal_ops`, `z`, `fir`, `iir`, `comparison`, `notch`, `echo`, `save_dir` |
 
 ---
 
@@ -261,14 +261,14 @@ bo_loc_am_thanh_so.py
 
 | Tên cũ (tiếng Anh) | Tên mới (tiếng Việt) | Ghi chú |
 |--------------------|----------------------|---------|
-| `dsp_audio_filter.py` | `bo_loc_am_thanh_so.py` | Bộ lọc âm thanh số |
-| `modules/applications.py` | `modules/ung_dung.py` | Ứng dụng thực tế |
-| `modules/comparison.py` | `modules/so_sanh.py` | So sánh FIR/IIR |
-| `modules/demo_runner.py` | `modules/chay_demo.py` | Chạy demo |
-| `modules/design_analysis.py` | `modules/phan_tich_thiet_ke.py` | Phân tích thiết kế |
-| `modules/plot_config.py` | `modules/cau_hinh_do_thi.py` | Cấu hình đồ thị |
-| `modules/signal_ops.py` | `modules/thaotac_tin_hieu.py` | Thao tác tín hiệu |
-| `modules/sampling_demo.py` | `modules/demo_lay_mau.py` | Demo lấy mẫu |
-| `modules/PT_TinHieuGoc.py` | `modules/bien_doi_z.py` | Biến đổi Z |
-| `modules/Thietke_Fir.py` | `modules/thiet_ke_fir.py` | Thiết kế FIR |
-| `modules/Thietke_IIR.py` | `modules/thiet_ke_iir.py` | Thiết kế IIR |
+| `bo_loc_am_thanh_so.py` | `bo_loc_am_thanh_so.py` | Bộ lọc âm thanh số |
+| `modules/ung_dung.py` | `modules/ung_dung.py` | Ứng dụng thực tế |
+| `modules/so_sanh.py` | `modules/so_sanh.py` | So sánh FIR/IIR |
+| `modules/chay_demo.py` | `modules/chay_demo.py` | Chạy demo |
+| `modules/phan_tich_thiet_ke.py` | `modules/phan_tich_thiet_ke.py` | Phân tích thiết kế |
+| `modules/cau_hinh_do_thi.py` | `modules/cau_hinh_do_thi.py` | Cấu hình đồ thị |
+| `modules/thaotac_tin_hieu.py` | `modules/thaotac_tin_hieu.py` | Thao tác tín hiệu |
+| `modules/demo_lay_mau.py` | `modules/demo_lay_mau.py` | Demo lấy mẫu |
+| `modules/bien_doi_z.py` | `modules/bien_doi_z.py` | Biến đổi Z |
+| `modules/thiet_ke_fir.py` | `modules/thiet_ke_fir.py` | Thiết kế FIR |
+| `modules/thiet_ke_iir.py` | `modules/thiet_ke_iir.py` | Thiết kế IIR |

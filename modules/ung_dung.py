@@ -5,15 +5,15 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.signal import freqz
 
-from .cau_hinh_do_thi import COLORS, build_save_path, finalize_figure
-from .thaotac_tin_hieu import energy
+from .cau_hinh_do_thi import COLORS, tao_duong_dan_luu, hoan_thien_bieu_do
+from .thaotac_tin_hieu import nang_luong
 
 
-def design_notch_50hz(fs: float = 44100.0, q: float = 30.0):
+def thiet_ke_notch_50hz(fs: float = 44100.0, q: float = 30.0):
     return signal.iirnotch(50.0, q, fs=fs)
 
 
-def demo_notch(fs: float = 44100.0, show_plots: bool = True, save_dir: str | None = None):
+def demo_bo_loc_notch(fs: float = 44100.0, show_plots: bool = True, save_dir: str | None = None):
     print("\n" + "=" * 60)
     print("BỔ SUNG: BỘ LỌC NOTCH 50Hz – LOẠI BỎ NHIỄU ĐIỆN LƯỚI")
     print("=" * 60)
@@ -25,11 +25,11 @@ def demo_notch(fs: float = 44100.0, show_plots: bool = True, save_dir: str | Non
     hum = 0.6 * np.sin(2 * np.pi * 50 * time)
     noisy = clean + hum + 0.05 * rng.standard_normal(len(time))
 
-    b_notch, a_notch = design_notch_50hz(fs)
+    b_notch, a_notch = thiet_ke_notch_50hz(fs)
     filtered = signal.lfilter(b_notch, a_notch, noisy)
 
-    snr_before = 10 * np.log10(energy(clean) / energy(noisy - clean))
-    snr_after = 10 * np.log10(energy(clean) / energy(filtered - clean))
+    snr_before = 10 * np.log10(nang_luong(clean) / nang_luong(noisy - clean))
+    snr_after = 10 * np.log10(nang_luong(clean) / nang_luong(filtered - clean))
     print(f"  SNR trước lọc : {snr_before:.2f} dB")
     print(f"  SNR sau lọc   : {snr_after:.2f} dB")
 
@@ -71,22 +71,22 @@ def demo_notch(fs: float = 44100.0, show_plots: bool = True, save_dir: str | Non
     axes[1, 1].legend(facecolor="#2a2a3e")
     axes[1, 1].grid(True)
 
-    finalize_figure(
+    hoan_thien_bieu_do(
         fig,
         show_plots,
-        save_path=build_save_path(save_dir, "08_notch_50hz.png"),
+        save_path=tao_duong_dan_luu(save_dir, "08_notch_50hz.png"),
     )
     return {"b": b_notch, "a": a_notch, "snr_before": snr_before, "snr_after": snr_after}
 
 
-def simulate_echo(x: np.ndarray, fs: float, delay_ms: float = 200.0, decay: float = 0.5) -> np.ndarray:
+def mo_phong_echo(x: np.ndarray, fs: float, delay_ms: float = 200.0, decay: float = 0.5) -> np.ndarray:
     delay_samples = int(delay_ms * fs / 1000)
     padded = np.zeros(delay_samples)
     delayed = np.concatenate([padded, x[:-delay_samples]])
     return x + decay * delayed
 
 
-def demo_echo(fs: float = 8000.0, show_plots: bool = True, save_dir: str | None = None):
+def demo_hieu_ung_echo(fs: float = 8000.0, show_plots: bool = True, save_dir: str | None = None):
     print("\n" + "=" * 60)
     print("BỔ SUNG: MÔ PHỎNG ECHO – LAB-VOLT TMS320C50 ex1_1")
     print("=" * 60)
@@ -110,16 +110,16 @@ def demo_echo(fs: float = 8000.0, show_plots: bool = True, save_dir: str | None 
     axes[0].grid(True)
 
     for index, (delay_ms, color) in enumerate([(100, COLORS[0]), (400, COLORS[3])], start=1):
-        y = simulate_echo(x, fs, delay_ms=delay_ms)
+        y = mo_phong_echo(x, fs, delay_ms=delay_ms)
         axes[index].plot(time, y, color=color, linewidth=0.9)
         axes[index].set_title(f"Echo với delay = {delay_ms} ms (D={int(delay_ms * fs / 1000)} mẫu)")
         axes[index].set_ylabel("Biên độ")
         axes[index].grid(True)
 
     axes[-1].set_xlabel("Thời gian (giây)")
-    finalize_figure(
+    hoan_thien_bieu_do(
         fig,
         show_plots,
-        save_path=build_save_path(save_dir, "09_echo_demo.png"),
+        save_path=tao_duong_dan_luu(save_dir, "09_echo_demo.png"),
     )
     return {"x": x, "time": time}

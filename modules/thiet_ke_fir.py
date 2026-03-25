@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from scipy.signal import firwin, freqz, remez
 
-from .cau_hinh_do_thi import COLORS, build_save_path, finalize_figure
+from .cau_hinh_do_thi import COLORS, tao_duong_dan_luu, hoan_thien_bieu_do
 
 
-def design_fir_hamming(wp_rad: float, ws_rad: float) -> np.ndarray:
+def thiet_ke_fir_hamming(wp_rad: float, ws_rad: float) -> np.ndarray:
     delta_w = ws_rad - wp_rad
     order = int(np.ceil(6.6 * np.pi / delta_w))
     if order % 2 != 0:
@@ -19,7 +19,7 @@ def design_fir_hamming(wp_rad: float, ws_rad: float) -> np.ndarray:
     return coefficients
 
 
-def design_fir_pm(wp_rad: float, ws_rad: float, delta1_db: float = 0.5, delta2_db: float = 40.0) -> np.ndarray:
+def thiet_ke_fir_pm(wp_rad: float, ws_rad: float, delta1_db: float = 0.5, delta2_db: float = 40.0) -> np.ndarray:
     delta1 = (10 ** (delta1_db / 20) - 1) / (10 ** (delta1_db / 20) + 1)
     delta2 = 10 ** (-delta2_db / 20)
     delta = min(delta1, delta2)
@@ -37,7 +37,7 @@ def design_fir_pm(wp_rad: float, ws_rad: float, delta1_db: float = 0.5, delta2_d
     return coefficients
 
 
-def plot_fir_response(
+def ve_dap_ung_fir(
     h_hamming: np.ndarray,
     h_pm: np.ndarray,
     fs: float = 44100.0,
@@ -71,10 +71,10 @@ def plot_fir_response(
         ax_phase.set_ylabel("Góc pha (độ)")
         ax_phase.grid(True)
 
-    finalize_figure(fig, show_plots, save_path=save_path)
+    hoan_thien_bieu_do(fig, show_plots, save_path=save_path)
 
 
-def demo_fir(fs: float = 44100.0, show_plots: bool = True, save_dir: str | None = None):
+def demo_bo_loc_fir(fs: float = 44100.0, show_plots: bool = True, save_dir: str | None = None):
     print("\n" + "=" * 60)
     print("CHƯƠNG 3: THIẾT KẾ BỘ LỌC FIR")
     print("=" * 60)
@@ -85,14 +85,14 @@ def demo_fir(fs: float = 44100.0, show_plots: bool = True, save_dir: str | None 
     fs_edge = ws * fs / (2 * np.pi)
     print(f"  Fs = {fs} Hz,  fp = {fp:.1f} Hz,  fs_edge = {fs_edge:.1f} Hz")
 
-    h_hamming = design_fir_hamming(wp, ws)
-    h_pm = design_fir_pm(wp, ws)
+    h_hamming = thiet_ke_fir_hamming(wp, ws)
+    h_pm = thiet_ke_fir_pm(wp, ws)
     print("  Pha tuyến tính (Hamming) : ✔  (FIR với h đối xứng – Type 1)")
-    plot_fir_response(
+    ve_dap_ung_fir(
         h_hamming,
         h_pm,
         fs=fs,
         show_plots=show_plots,
-        save_path=build_save_path(save_dir, "05_fir_hamming_vs_pm.png"),
+        save_path=tao_duong_dan_luu(save_dir, "05_fir_hamming_vs_pm.png"),
     )
     return {"h_hamming": h_hamming, "h_pm": h_pm, "wp": wp, "ws": ws, "fs": fs}

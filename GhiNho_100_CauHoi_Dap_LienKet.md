@@ -2,7 +2,7 @@
 
 Tài liệu này cập nhật theo:
 
-- Code mới có `sampling_demo`, kiểm tra Nyquist, mô phỏng aliasing, xuất ảnh `imgaes/v3`.
+- Code mới có `demo_lay_mau`, kiểm tra Nyquist, mô phỏng aliasing, xuất ảnh `imgaes/v3`.
 - Báo cáo hợp nhất mới: `BaoCao_HopNhat_V1_V2_V3.md`.
 
 Quy ước nhấn mạnh:
@@ -53,7 +53,7 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Câu 6.** **Rời rạc hóa trong code dùng phương pháp gì?**  
 **Đáp:** Lấy mẫu đều: $x[n]=x(nT_s)$.  
 **Vì sao:** Đây là chuẩn trong DSP.  
-**Liên kết:** `modules/sampling_demo.py`.
+**Liên kết:** `modules/demo_lay_mau.py`.
 
 **Câu 7.** **`Ts` được tính thế nào?**  
 **Đáp:** $T_s=1/F_s$.  
@@ -73,7 +73,7 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Câu 10.** **Trong phản ví dụ `Fs=4 kHz`, thành phần 3 kHz alias về đâu?**  
 **Đáp:** Về khoảng 1 kHz.  
 **Vì sao:** 3 kHz nằm ngoài Nyquist 2 kHz nên bị gấp.  
-**Liên kết:** `alias_frequency()`.
+**Liên kết:** `tan_so_alias()`.
 
 **Câu 11.** **Vì sao cần vẽ cả time-domain và FFT ở phần sampling?**  
 **Đáp:** Time-domain cho trực giác mẫu; FFT cho bằng chứng aliasing/phổ.  
@@ -129,17 +129,17 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 
 ### PHẦN 2 — THAO TÁC TÍN HIỆU RỜI RẠC VÀ HỆ LTI
 
-**Câu 21.** **`sigshift()` làm gì?**  
+**Câu 21.** **`dich_tin_hieu()` làm gì?**  
 **Đáp:** Dịch trục chỉ số của tín hiệu.  
 **Vì sao:** Mô phỏng trễ/sớm trong miền rời rạc.  
-**Liên kết:** `modules/signal_ops.py`.
+**Liên kết:** `modules/thaotac_tin_hieu.py`.
 
-**Câu 22.** **`sigfold()` làm gì?**  
+**Câu 22.** **`gap_tin_hieu()` làm gì?**  
 **Đáp:** Gấp tín hiệu: $x(n)\to x(-n)$.  
 **Vì sao:** Dùng trong phân tích tích chập/đối xứng.  
 **Liên kết:** Câu 21.
 
-**Câu 23.** 🔴 **`sigadd()` vì sao dễ sai?**  
+**Câu 23.** 🔴 **`cong_hai_tin_hieu()` vì sao dễ sai?**  
 **Đáp:** Vì phải căn chỉnh index trước khi cộng.  
 **Vì sao:** Lệch `n_start/n_stop` sẽ cộng sai vị trí mẫu.  
 **Liên kết:** Debug cơ bản trước khi lọc.
@@ -169,7 +169,7 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Vì sao:** Lỗi thường lan truyền khó phát hiện.  
 **Liên kết:** Câu 23.
 
-**Câu 29.** **`energy()` liên quan gì đến phần ứng dụng notch?**  
+**Câu 29.** **`nang_luong()` liên quan gì đến phần ứng dụng notch?**  
 **Đáp:** Dùng để tính SNR trước/sau lọc.  
 **Vì sao:** Cần số liệu định lượng, không chỉ nhìn đồ thị.  
 **Liên kết:** Câu 86.
@@ -177,7 +177,7 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Câu 30.** **Ý nghĩa của module hóa ở phần nền DSP?**  
 **Đáp:** Có thể test từng khối độc lập.  
 **Vì sao:** Giảm chi phí debug và tăng khả năng tái sử dụng.  
-**Liên kết:** `demo_runner.py`.
+**Liên kết:** `chay_demo.py`.
 
 ---
 
@@ -203,7 +203,7 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Vì sao:** Khi đó đáp ứng tự do suy giảm theo thời gian.  
 **Liên kết:** Z-plane trong code.
 
-**Câu 35.** **`zplane()` dùng để làm gì?**  
+**Câu 35.** **`ve_mat_phang_z()` dùng để làm gì?**  
 **Đáp:** Vẽ zero, pole và vòng tròn đơn vị.  
 **Vì sao:** Kiểm tra ổn định trực quan nhất.  
 **Liên kết:** Hình 04.
@@ -262,10 +262,10 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Vì sao:** Cần đáp ứng thay đổi gắt hơn theo tần số.  
 **Liên kết:** Câu 48.
 
-**Câu 46.** **`design_analysis` module mới có vai trò gì?**  
+**Câu 46.** **`phan_tich_thiet_ke` module mới có vai trò gì?**  
 **Đáp:** In rõ 3 khối: phân tích input, lý do chọn lọc, tính tham số.  
 **Vì sao:** Đúng chuỗi trả lời khi vấn đáp.  
-**Liên kết:** `modules/design_analysis.py`.
+**Liên kết:** `modules/phan_tich_thiet_ke.py`.
 
 **Câu 47.** 🔴 **Vì sao FIR Hamming ra bậc 66 trong bài này?**  
 **Đáp:** Do $M=\lceil 6.6\pi/\Delta\omega\rceil$ với $\Delta\omega=0.1\pi$.  
@@ -314,7 +314,7 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Câu 55.** **Trong Python dùng hàm nào cho Parks-McClellan?**  
 **Đáp:** `remez()`.  
 **Vì sao:** Triển khai chuẩn thuật toán equiripple.  
-**Liên kết:** `modules/Thietke_Fir.py`.
+**Liên kết:** `modules/thiet_ke_fir.py`.
 
 **Câu 56.** **`weight` trong `remez` có tác dụng gì?**  
 **Đáp:** Ưu tiên sai số giữa passband và stopband.  
@@ -422,7 +422,7 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Câu 75.** **Vì sao code vẫn in pre-warp dù thiết kế digital trực tiếp được?**  
 **Đáp:** Để bám sát logic lý thuyết và MATLAB trong báo cáo.  
 **Vì sao:** Giúp giải thích rõ khi bảo vệ.  
-**Liên kết:** `design_analysis.py`.
+**Liên kết:** `phan_tich_thiet_ke.py`.
 
 **Câu 76.** **Tham số nào điều khiển độ sắc cạnh lọc?**  
 **Đáp:** Dải chuyển tiếp và ràng buộc ripple/suy giảm.  
@@ -488,7 +488,7 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Vì sao:** Hai miền xác nhận lẫn nhau.  
 **Liên kết:** Hình 08.
 
-**Câu 88.** **`simulate_echo()` dùng mô hình nào?**  
+**Câu 88.** **`mo_phong_echo()` dùng mô hình nào?**  
 **Đáp:** $y(n)=x(n)+\alpha x(n-D)$.  
 **Vì sao:** Mô hình echo rời rạc chuẩn, đơn giản và trực quan.  
 **Liên kết:** Hình 09.
@@ -512,13 +512,13 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Vì sao:** Giảm phụ thuộc chéo và giảm phạm vi lỗi.  
 **Liên kết:** `modules/*`.
 
-**Câu 92.** **`demo_runner.py` đóng vai trò gì?**  
+**Câu 92.** **`chay_demo.py` đóng vai trò gì?**  
 **Đáp:** Orchestrator gọi toàn bộ demo theo thứ tự logic.  
 **Vì sao:** Tạo pipeline nhất quán từ đầu đến cuối.  
 **Liên kết:** Luồng báo cáo hợp nhất.
 
-**Câu 93.** **`plot_config.py` ngoài style còn làm gì mới?**  
-**Đáp:** Hỗ trợ lưu ảnh bằng `build_save_path` và `finalize_figure(save_path=...)`.  
+**Câu 93.** **`cau_hinh_do_thi.py` ngoài style còn làm gì mới?**  
+**Đáp:** Hỗ trợ lưu ảnh bằng `tao_duong_dan_luu` và `hoan_thien_bieu_do(save_path=...)`.  
 **Vì sao:** Tự động hóa tạo tài liệu hình ảnh.  
 **Liên kết:** `--save-plots-dir`.
 
@@ -538,7 +538,7 @@ Chuỗi ôn nhanh gồm: lấy mẫu đúng/sai Nyquist; chọn FIR/IIR; tính b
 **Liên kết:** File hợp nhất PDF.
 
 **Câu 97.** **Khi bị hỏi “làm sao tái lập kết quả”, trả lời ngắn gọn thế nào?**  
-**Đáp:** Chạy `python dsp_audio_filter.py --no-plots --save-plots-dir imgaes/v3`, sau đó build báo cáo MD→HTML→PDF.  
+**Đáp:** Chạy `python bo_loc_am_thanh_so.py --no-plots --save-plots-dir imgaes/v3`, sau đó build báo cáo MD→HTML→PDF.  
 **Vì sao:** Đủ để tái sinh số liệu và ảnh.  
 **Liên kết:** Câu 93, 96.
 

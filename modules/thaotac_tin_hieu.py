@@ -3,18 +3,18 @@ from __future__ import annotations
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .cau_hinh_do_thi import COLORS, build_save_path, finalize_figure
+from .cau_hinh_do_thi import COLORS, tao_duong_dan_luu, hoan_thien_bieu_do
 
 
-def sigshift(x: np.ndarray, n: np.ndarray, d: int):
+def dich_tin_hieu(x: np.ndarray, n: np.ndarray, d: int):
     return x.copy(), n + d
 
 
-def sigfold(x: np.ndarray, n: np.ndarray):
+def gap_tin_hieu(x: np.ndarray, n: np.ndarray):
     return x[::-1].copy(), -n[::-1].copy()
 
 
-def sigadd(x1: np.ndarray, n1: np.ndarray, x2: np.ndarray, n2: np.ndarray):
+def cong_hai_tin_hieu(x1: np.ndarray, n1: np.ndarray, x2: np.ndarray, n2: np.ndarray):
     n_start = min(n1[0], n2[0])
     n_stop = max(n1[-1], n2[-1])
     n_out = np.arange(n_start, n_stop + 1)
@@ -26,22 +26,22 @@ def sigadd(x1: np.ndarray, n1: np.ndarray, x2: np.ndarray, n2: np.ndarray):
     return y1 + y2, n_out
 
 
-def energy(x: np.ndarray) -> float:
+def nang_luong(x: np.ndarray) -> float:
     return float(np.sum(np.abs(x) ** 2))
 
 
-def demo_signal_ops(show_plots: bool = True, save_dir: str | None = None):
+def demo_thaotac_tin_hieu(show_plots: bool = True, save_dir: str | None = None):
     n = np.arange(-5, 6)
     x = np.array([0, 0, 0, 1, 2, 3, 2, 1, 0, 0, 0], dtype=float)
 
-    _, n_shifted = sigshift(x, n, 3)
-    x_folded, n_folded = sigfold(x, n)
-    x_added, n_added = sigadd(x, n, x_folded, n_folded)
+    _, n_shifted = dich_tin_hieu(x, n, 3)
+    x_folded, n_folded = gap_tin_hieu(x, n)
+    x_added, n_added = cong_hai_tin_hieu(x, n, x_folded, n_folded)
 
     print("=" * 60)
     print("CHƯƠNG 1: THAO TÁC TÍN HIỆU RỜI RẠC")
     print("=" * 60)
-    print(f"  Năng lượng x(n)  : E = {energy(x):.2f}")
+    print(f"  Năng lượng x(n)  : E = {nang_luong(x):.2f}")
     print(f"  Sau dịch  d=3    : n_shift = {n_shifted}")
     print(f"  Sau gấp          : n_fold  = {n_folded}")
 
@@ -63,9 +63,9 @@ def demo_signal_ops(show_plots: bool = True, save_dir: str | None = None):
         ax.set_ylabel("Biên độ")
         ax.grid(True)
 
-    finalize_figure(
+    hoan_thien_bieu_do(
         fig,
         show_plots,
-        save_path=build_save_path(save_dir, "03_signal_ops_discrete.png"),
+        save_path=tao_duong_dan_luu(save_dir, "03_signal_ops_discrete.png"),
     )
     return {"x": x, "n": n, "x_added": x_added, "n_added": n_added}

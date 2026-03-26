@@ -54,6 +54,7 @@ cd DSP-test
 
 ```bash
 # Tạo virtual environment
+python -m venv venv
 
 # Kích hoạt (Linux / macOS)
 source .venv/bin/activate
@@ -117,20 +118,9 @@ DSP-test/
 Chạy lệnh sau từ thư mục gốc để thực hiện toàn bộ chuỗi mô phỏng và hiển thị tất cả biểu đồ:
 
 ```bash
+# Câu lệnh chạy gốc
 python bo_loc_am_thanh_so.py
-```
 
-### Các tùy chọn dòng lệnh
-
-| Tùy chọn | Mô tả |
-|---|---|
-| _(không có)_ | Chạy đầy đủ và hiển thị tất cả biểu đồ |
-| `--no-plots` | Chạy không hiển thị biểu đồ (tiện cho CI/CD hoặc môi trường headless) |
-| `--save-plots-dir <thư mục>` | Lưu toàn bộ biểu đồ dưới dạng file PNG vào thư mục chỉ định |
-
-**Ví dụ:**
-
-```bash
 # Chỉ chạy tính toán, không mở cửa sổ đồ thị
 python bo_loc_am_thanh_so.py --no-plots
 
@@ -140,6 +130,16 @@ python bo_loc_am_thanh_so.py --save-plots-dir imgaes/v3
 # Vừa lưu ảnh vừa không hiển thị cửa sổ (phù hợp server/script tự động)
 python bo_loc_am_thanh_so.py --no-plots --save-plots-dir imgaes/v3
 ```
+
+
+### Các tùy chọn dòng lệnh
+
+| Tùy chọn | Mô tả |
+|---|---|
+| _(không có)_ | Chạy đầy đủ và hiển thị tất cả biểu đồ |
+| `--no-plots` | Chạy không hiển thị biểu đồ (tiện cho CI/CD hoặc môi trường headless) |
+| `--save-plots-dir <thư mục>` | Lưu toàn bộ biểu đồ dưới dạng file PNG vào thư mục chỉ định |
+
 
 ---
 
